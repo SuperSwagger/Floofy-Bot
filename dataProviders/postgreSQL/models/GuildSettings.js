@@ -8,6 +8,7 @@ let GuildSettings = database.db.define('guildSettings', {
 	guildID: Sequelize.STRING,
 	customRep: Sequelize.STRING,
 	customRepImage: Sequelize.STRING,
+	adFilter: Sequelize.BOOLEAN,
 	customcommands: {
 		type: Sequelize.JSONB(), // eslint-disable-line new-cap
 		defaultValue: {}
@@ -36,6 +37,10 @@ let GuildSettings = database.db.define('guildSettings', {
 		type: Sequelize.JSONB(), // eslint-disable-line new-cap
 		defaultValue: {}
 	},
+	slowmode: {
+		type: Sequelize.JSONB(), // eslint-disable-line new-cap
+		defaultValue: {}
+	},
 	logs: {
 		type: Sequelize.JSONB(), // eslint-disable-line new-cap
 		defaultValue: {}
@@ -45,6 +50,10 @@ let GuildSettings = database.db.define('guildSettings', {
 		defaultValue: {}
 	},
 	quiz: {
+		type: Sequelize.JSONB(), // eslint-disable-line new-cap
+		defaultValue: {}
+	},
+	streams: {
 		type: Sequelize.JSONB(), // eslint-disable-line new-cap
 		defaultValue: {}
 	},

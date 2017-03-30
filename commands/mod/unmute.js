@@ -1,4 +1,6 @@
 const { Command } = require('discord.js-commando');
+const Redis = require('../../dataProviders/redis/Redis');
+const redis = new Redis();
 
 module.exports = class UnMuteUserCommand extends Command {
 	constructor(client) {
@@ -28,12 +30,12 @@ module.exports = class UnMuteUserCommand extends Command {
 		const user = member.user;
 		const botMember = await msg.guild.fetchMember(msg.client.user);
 		if (!botMember.hasPermission('MANAGE_ROLES_OR_PERMISSIONS')) return msg.reply('I do not have the `manage roles` permission.');
-		const settings = this.client.provider.get(msg.guild, 'muted', []);
-		if (!settings.includes(member.id)) return msg.say(`The user ${member.id} isn't muted!`);
+		const settings = await redis.db.getAsync(`mute${msg.guild.id}`).then(JSON.parse) || [];
+		if (!settings.includes(member.id)) return msg.say(`The user ${member.user.username} isn't muted!`);
 		if (!msg.guild.roles.exists('name', 'Muted')) await msg.guild.createRole({ name: 'Muted', position: 0 }).then(() => msg.reply('A role `Muted` has been created. Make sure it\'s sorted correctly (ideally at the top)!'));
-		settings.splice(settings.indexOf(member.id));
-		this.client.provider.set(msg.guild.id, 'muted', settings);
-		await member.addRole(msg.guild.roles.find('name', 'Muted'));
+		settings.splice(settings.indexOf(member.id), 1);
+		await redis.db.setAsync(`mute${msg.guild.id}`, JSON.stringify(settings)).catch(console.error);
+		await member.removeRole(msg.guild.roles.find('name', 'Muted'));
 		return msg.reply(`I have successfully unmuted ${user.username}.`);
 		// mod logs
 	}

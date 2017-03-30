@@ -14,9 +14,9 @@ module.exports = class AddFlairCommand extends Command {
 			],
 			args: [
 				{
-					key: 'role',
-					prompt: 'What role would you like to add to the list of self-assignable roles?\n',
-					type: 'role'
+					key: 'roles',
+					prompt: 'What role(s) would you like to add to the list of self-assignable roles?\n',
+					type: 'string'
 				}
 			]
 		});
@@ -30,10 +30,21 @@ module.exports = class AddFlairCommand extends Command {
 		const settings = await guildSettings.findOne({ where: { guildID: msg.guild.id } }) || await guildSettings.create({ guildID: msg.guild.id });
 		let flairs = settings.flairs;
 		if (!flairs.roles) flairs.roles = [];
-		if (flairs.roles.includes(args.role.id)) return msg.reply(`${args.role.name} is already in the list of self-assignable roles.`);
-		flairs.roles.push(args.role.id);
+		let out = '', role;
+		args = args.roles.split(',');
+		for (let i = 0; i < args.length; i++) {
+			args[i] = args[i].trim();
+			role = msg.guild.roles.find(thing => thing.name.toLowerCase() === args[i].toLowerCase());
+			if (!role) {
+				out += `\`${args[i]}\` does not exist.\n`;
+			}	else if (flairs.roles.includes(role.id)) { out += `\`${role.name}\` is already assigned.\n`; }			else {
+				flairs.roles.push(role.id);
+				out += `\`${role.name}\` added successfully!\n`;
+			}
+		}
 		settings.flairs = flairs;
-		await settings.save().catch(console.error);
-		return msg.reply(`The role \`${args.role.name}\` has been successfully added to the list of self-assignable roles!`);
+		settings.save().then(() => {
+			return msg.channel.send(out);
+		});
 	}
 };

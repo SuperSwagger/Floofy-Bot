@@ -29,9 +29,8 @@ module.exports = class StarCommand extends Command {
 
 		const starboard = msg.guild.channels.find('name', 'starboard');
 		if (!starboard) return msg.reply('can\'t star things without a #starboard channel. Create one now!');
-		if (message.author.id === msg.author.id) {
+		if (message.author.id === msg.author.id && !this.client.funcs.isStaff(message.member)) {
 			msg.reply('sorry, you cannot star your own message!');
-
 			return msg.delete().catch(err => null); // eslint-disable-line
 		}
 
@@ -54,7 +53,7 @@ module.exports = class StarCommand extends Command {
 
 			let edit;
 			if ((starCount - 1) < 5) edit = starredMessage.embeds[0].footer.text.replace(`${starCount - 1} ⭐`, `${starCount} ⭐`);
-			else if ((starCount - 1) >= 5 < 10) edit = starredMessage.embeds[0].footer.text.replace(`${starCount - 1} ⭐`, `${starCount} 🌟`);
+			else if ((starCount - 1) >= 5 && (starCount - 1) < 10) edit = starredMessage.embeds[0].footer.text.replace(`${starCount - 1} ⭐`, `${starCount} 🌟`);
 			else if ((starCount - 1) >= 10) edit = starredMessage.embeds[0].footer.text.replace(`${starCount - 1} 🌟`, `${starCount} 🌠`);
 
 			await starredMessage.edit({

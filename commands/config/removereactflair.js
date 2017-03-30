@@ -30,7 +30,9 @@ module.exports = class RemoveReactFlairCommand extends Command {
 		let settings = await guildSettings.findOne({ where: { guildID: msg.guild.id } });
 		if (!settings) settings = await guildSettings.create({ guildID: msg.guild.id });
 		let reactions = settings.reactions;
-		delete reactions[args.role.id];
+		if (!reactions.roles.includes(args.role.id)) return msg.reply('this role is not on the list of self-assignable roles by reactions!');
+		reactions.roles.splice(reactions.roles.indexOf(args.role.id), 1);
+		reactions.emojis.splice(reactions.roles.indexOf(args.role.id), 1);
 		settings.reactions = reactions;
 		await settings.save().catch(console.error);
 		return msg.reply(`I have successfully removed ${args.role.name} from the list of self-assignable roles by reactions.`);

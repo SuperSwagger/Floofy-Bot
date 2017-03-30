@@ -30,11 +30,8 @@ module.exports = class DeleteCommandCommand extends Command {
 	}
 
 	async run(msg, args) {
-		let settings = await guildSettings.findOne({ where: { guildID: msg.guild.id } });
-		if (!settings) settings = await guildSettings.create({ guildID: msg.guild.id });
+		const settings = await guildSettings.findOne({ where: { guildID: msg.guild.id } }) || await guildSettings.create({ guildID: msg.guild.id });
 		let customcommands = settings.customcommands;
-		// if (!args.name.includes(',')) args.name = [args.name.slice(0, 0), ',', args.name.slice(0)].join('');
-		// if (args.name.includes(',')) args.name = args.name.replace(',', '').trim();
 		if (!customcommands[args.name]) return msg.reply(`The command \`${args.name}\` does not exist!`);
 		delete customcommands[args.name];
 		settings.customcommands = customcommands;

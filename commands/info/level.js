@@ -1,5 +1,5 @@
 const { Command } = require('discord.js-commando');
-const Experience = require('../../currency/Experience');
+const Experience = require('../../structures/currency/Experience');
 
 module.exports = class LevelCommand extends Command {
 	constructor(client) {

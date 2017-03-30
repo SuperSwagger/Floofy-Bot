@@ -29,8 +29,7 @@ module.exports = class AddFilterCommand extends Command {
 	}
 
 	async run(msg, args) {
-		let settings = await guildSettings.findOne({ where: { guildID: msg.guild.id } });
-		if (!settings) settings = await guildSettings.create({ guildID: msg.guild.id });
+		const settings = await guildSettings.findOne({ where: { guildID: msg.guild.id } }) || await guildSettings.create({ guildID: msg.guild.id });
 		let filter = settings.filter;
 		if (!filter.words) filter.words = [];
 		if (filter.words.includes(args.word)) return msg.reply(`The word \`${args.word}\` is already blacklisted.`);

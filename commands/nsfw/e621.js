@@ -34,8 +34,8 @@ module.exports = class E621Command extends Command {
 			.end((err, res) => {
 				if (err) { return msg.channel.send('There was an error retrieving posts.'); }	else {
 					let body = res.body;
-					for (var i = 0; i < 101; i++) {
-						var rand = Math.floor(Math.random() * 101);
+					for (let i = 0; i < 101; i++) {
+						const rand = Math.floor(Math.random() * 101);
 						if ((body[rand] && body[rand].file_url) && (body[rand].file_ext === 'jpg' || body[rand].file_ext === 'png' || body[rand].file_ext === 'gif')) {
 							str = body[rand].file_url;
 							break;

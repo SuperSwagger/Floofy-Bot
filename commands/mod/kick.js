@@ -15,6 +15,12 @@ module.exports = class KickUserCommand extends Command {
 					key: 'member',
 					prompt: 'What user would you like to kick?\n',
 					type: 'member'
+				},
+				{
+					key: 'reason',
+					prompt: 'What are you kicking this user for?\n',
+					type: 'string',
+					default: ''
 				}
 			]
 		});
@@ -26,11 +32,15 @@ module.exports = class KickUserCommand extends Command {
 
 	async run(msg, args) {
 		const member = args.member;
+		if (member.user.id === this.client.user.id) return msg.reply('Please don\'t softban me :(');
 		const botMember = await msg.guild.fetchMember(this.client.user);
 		if (!botMember.hasPermission('KICK_MEMBERS')) return msg.reply('I do not have the `kick members` permission.');
-		return member.kick()
-			.then(() => msg.say(`${args.member.user.username}#${args.member.user.discriminator} was kicked.`))
-			.catch(error => msg.reply(`There was an error trying to kick: ${error}`));
+		if (!args.member.kickable) return msg.reply('I am unable to kick this user, please ensure my highest role is above the target user\'s highest role!');
+
+		const message = await msg.channel.send('Kicking user...');
+
+		await member.kick();
+		return message.edit(`${args.member.user.username}#${args.member.user.discriminator} was kicked.`);
 	}
 	// go to mod logs
 };

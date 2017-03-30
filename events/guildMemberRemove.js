@@ -1,20 +1,24 @@
 const guildSettings = require('../dataProviders/postgreSQL/models/GuildSettings');
-const Case = require('../structures/Moderation');
+// const Case = require('../structures/Moderation');
 
 exports.run = async (bot, member) => {
   // leaves/kicks
 	const settings = await guildSettings.findOne({ where: { guildID: member.guild.id } });
 	if (!settings) return;
+	bot.funcs.logEvent(bot, 'guildMemberRemove');
 	const logs = settings.logs;
-	let rolestate = settings.rolestate;
-	const mentions = settings.mentions;
+	const rolestate = settings.rolestate;
+	// const mentions = settings.mentions;
 	const leave = settings.leave;
+	const bans = await member.guild.fetchBans().catch(() => null);
 
-	const bans = await member.guild.fetchBans();
-	if (logs && logs.enable && logs.channel && logs.fields ? logs.fields.leaves !== false : !logs.fields && !bans.has(member.id) && member.guild.channels.has(logs.channel)) {
-		let embed = new bot.methods.Embed();
-		embed.setColor('#ff5050').setTimestamp().setAuthor(`${member.user.username} (${member.user.id})`, member.user.avatarURL).setFooter(bot.user.username, bot.user.avatarURL);
-		member.guild.channels.get(logs.channel).sendEmbed(embed);
+	if (logs && logs.enable && logs.channel && (logs.fields ? logs.fields.leaves !== false : !logs.fields) && (bans && !bans.has(member.id)) && member.guild.channels.has(logs.channel)) {
+		const embed = new bot.methods.Embed()
+		.setColor('#ff5050')
+		.setTimestamp()
+		.setAuthor(`${member.user.username} (${member.user.id})`, member.user.avatarURL)
+		.setFooter(bot.user.username, bot.user.avatarURL);
+		await member.guild.channels.get(logs.channel).sendEmbed(embed);
 		/*
 		if (mentions && mentions.enabled && mentions.action === 'kick') embed.addField('\u274C MENTION ABUSE KICK', `${member.user.username} has been removed from the server!`);
 		else embed.addField('\u274C NEW LEAVE', `${member.user.username} has left or been kicked from the server!`);
@@ -23,19 +27,17 @@ exports.run = async (bot, member) => {
 	}
 
 	if (leave && leave.enabled === true && leave.channel && member.guild.channels.has(leave.channel)) {
-		member.guild.channels.get(leave.channel).send(leave.message.replace(/USER/g, member.displayName));
+		await member.guild.channels.get(leave.channel).send(leave.message.replace(/USER/g, member.displayName));
 	}
 
 	// rolestate
 	if (rolestate && rolestate.enabled) {
-		const bans = await member.guild.fetchBans().catch(null);
 		if (!bans) return member.guild.owner.sendMessage(`\uD83D\uDEAB I do not have access to the banned members of server: \`${member.guild.name}\`. Please give me the \`ban members\` or \`administrator\` permission for rolestate to work!`); // eslint-disable-line consistent-return
 		if (bans.has(member.id)) return;
 		if (!rolestate.users) rolestate.users = {};
 		rolestate.users[member.id] = member.roles.map(role => role.id);
 		settings.rolestate = rolestate;
-		await settings.save().catch(console.error);
-		return;
+		await settings.save();
 	}
 
 	// modlogs
@@ -52,4 +54,5 @@ exports.run = async (bot, member) => {
 		await member.guild.channels.get(channel).sendEmbed(embed);
 	}
 	*/
+	member = null;
 };

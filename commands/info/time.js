@@ -17,10 +17,10 @@ module.exports = class EmojiInfoCommand extends Command {
 		return msg.author.id === this.client.options.owner;
 	}
 	async run(msg, args) {
-		var canvas = new Canvas(320, 320);
-		var ctx = canvas.getContext('2d');
-		var x, y, i;
-		var now = new Date();
+		const canvas = new Canvas(320, 320);
+		const ctx = canvas.getContext('2d');
+		let x, y, i;
+		const now = new Date();
 
 		ctx.clearRect(0, 0, 320, 320);
 
@@ -61,9 +61,9 @@ module.exports = class EmojiInfoCommand extends Command {
 			}
 		}
 
-		var sec = now.getSeconds();
-		var min = now.getMinutes();
-		var hr = now.getHours() % 12;
+		const sec = now.getSeconds();
+		const min = now.getMinutes();
+		const hr = now.getHours() % 12;
 
 		ctx.fillStyle = 'black';
 

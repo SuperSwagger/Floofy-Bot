@@ -225,13 +225,13 @@ function numToHex(num) {
 
 function wrapText(context, text, x, y, maxWidth, lineHeight) { // eslint-disable-line
 	// http://www.html5canvastutorials.com/tutorials/html5-canvas-wrap-text-tutorial/
-	var words = text.split(' ');
-	var line = '';
+	const words = text.split(' ');
+	let line = '';
 
-	for (let i = 0; i < words.length; n++) {
-		var testLine = `${line + words[i]} `;
-		var metrics = context.measureText(testLine);
-		var testWidth = metrics.width;
+	for (let i = 0; i < words.length; i++) {
+		const testLine = `${line + words[i]} `;
+		const metrics = context.measureText(testLine);
+		const testWidth = metrics.width;
 		if (testWidth > maxWidth && i > 0) {
 			context.fillText(line, x, y);
 			line = `${words[i]} `;

@@ -15,7 +15,7 @@ function rgb2hex(r, g, b) {
 
 // http://stackoverflow.com/questions/2541481/get-average-color-of-image-via-javascript
 module.exports = async (url) => {
-	var blockSize = 5,
+	const blockSize = 5,
 		defaultRGB = { r: 0, g: 0, b: 0 };
 
 	let canvas = new Canvas(100, 100);
@@ -38,7 +38,7 @@ module.exports = async (url) => {
 	ctx.globalAlpha = 0.8;
 	const avatarRes = await request.defaults({ encoding: null })(url);
 	avatar.src = avatarRes;
-		let x = 0; let y = 0; let w = 100; let h = 100; // eslint-disable-line
+	let x = 0; let y = 0; let w = 100; let h = 100; // eslint-disable-line
 	ctx.rect(x, y, w, h);
 	ctx.stroke();
 	ctx.fillStyle = 'white';

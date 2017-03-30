@@ -26,17 +26,19 @@ module.exports = class SetRoleCommand extends Command {
 	}
 
 	hasPermission(msg) {
-		return msg.member.hasPermission('MANAGE_ROLES_OR_PERMISSIONS');
+		return msg.member.hasPermission('MANAGE_ROLES_OR_PERMISSIONS') || this.client.options.owner === msg.author.id;
 	}
 
 	async run(msg, args) {
-		const member = args.member;
-		const user = member.user;
-		const role = args.role;
-		const botMember = await msg.guild.fetchMember(msg.client.user);
+		const { member, role } = args;
+		const { user } = member;
+		const botMember = await msg.guild.fetchMember(this.client.user);
 		if (!botMember.hasPermission('MANAGE_ROLES_OR_PERMISSIONS')) return msg.reply('I do not have the `manage roles` permission.');
 		// const role = msg.guild.roles.filter(ro => ro.name.toLowerCase() === role.toLowerCase()).first();
-		await member.addRoles([role]);
+		if (member.roles.has(role.id)) return msg.reply('the target user already has that role!');
+		if (botMember.highestRole.comparePositionTo(role) < 1) return msg.reply('I do not have permissions to edit this role, please check role order!');
+		if (msg.member.highestRole.comparePositionTo(args.role) < 1) return msg.reply('you do not have access to this role, please check role order!');
+		await member.addRole(role);
 		return msg.reply(`I have added ${role.name} to ${user.username}.`);
 	}
 };

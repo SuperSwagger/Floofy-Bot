@@ -1,9 +1,11 @@
+let slotmachine = [[], [], []], slotX, slotY;
+const slotItems = ['💰', '🍋', '🐌', '👻', '🍄', '💎', '🚀', '🌸', '🍆', '👽', '🌟', '🍒', '🆓', '🔥', '🌈'];
+
 function randomNumber(min, max) {
 	return Math.floor((Math.random() * max) + min);
 }
 
 function randSlotMachine() {
-	let slotmachine = [[], [], []], slotX, slotY, slotItems;
 	for (slotX = 0; slotX < 3; slotX++) {
 		for (slotY = 0; slotY < 3; slotY++) {
 			slotmachine[slotX][slotY] = slotItems[randomNumber(0, slotItems.length - 1)];
@@ -17,6 +19,7 @@ function randSlotMachine() {
 	}
 }
 
-module.exports = (str) => {
-	return randSlotMachine();
+module.exports = () => {
+	randSlotMachine();
+	return slotmachine;
 };

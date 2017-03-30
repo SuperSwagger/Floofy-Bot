@@ -8,22 +8,22 @@ events = Object.keys(events).map(k => events[k]);
 const loadEvents = (client, baseDir, count) => new Promise((resolve, reject) => {
 	const dir = path.resolve(`${baseDir}./events/`);
 	fs.ensureDirAsync(dir)
-	.then(() => {
-		fs.readdirAsync(dir)
-		.then((files) => {
-			let e = count;
-			files = files.filter((f) => {
-				const name = f.split('.')[0];
-				return events.includes(name);
-			});
-			files.forEach((f) => {
-				const name = f.split('.')[0];
-				client.on(name, (...args) => require(`${dir}/${f}`).run(client, ...args));
-				e++;
-			});
-			resolve(e);
+		.then(() => {
+			fs.readdirAsync(dir)
+				.then((files) => {
+					let e = count;
+					files = files.filter((f) => {
+						const name = f.split('.')[0];
+						return events.includes(name);
+					});
+					files.forEach((f) => {
+						const name = f.split('.')[0];
+						client.on(name, (...args) => require(`${dir}/${f}`).run(client, ...args));
+						e++;
+					});
+					resolve(e);
+				}).catch(err => reject(err));
 		}).catch(err => reject(err));
-	}).catch(err => reject(err));
 });
 
 module.exports = (client) => {

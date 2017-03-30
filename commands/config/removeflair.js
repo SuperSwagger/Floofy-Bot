@@ -31,7 +31,7 @@ module.exports = class RemoveFlairCommand extends Command {
 		if (!settings.flairs.roles) return msg.reply('there are no self-assignable roles on the list.');
 		if (!settings.flairs.roles.includes(args.role.id)) return msg.reply(`${args.role.name} is not in the list of self-assignable roles.`);
 		let flairs = settings.flairs;
-		settings.flairs.roles.splice(settings.flairs.roles.indexOf(args.role.id));
+		settings.flairs.roles.splice(settings.flairs.roles.indexOf(args.role.id), 1);
 		settings.flairs = flairs;
 		await settings.save().catch(console.error);
 		return msg.reply(`The role \`${args.role.name}\` has been successfully removed from the list of self-assignable roles!`);

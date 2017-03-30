@@ -1,4 +1,4 @@
-const permFlags = require('discord.js/src/util/Constants.js').PermissionFlags;
+const permFlags = require('discord.js/src/util/Permissions.js').FLAGS;
 
 module.exports = (requiredPerms) => {
 	const genObject = {};
@@ -9,15 +9,7 @@ module.exports = (requiredPerms) => {
 
 	genObject.READ_MESSAGES = true;
 	genObject.SEND_MESSAGES = true;
-	/*
-	client.commands.forEach((command) => {
-		if (command.conf.botPerms.length > 0) {
-			command.conf.botPerms.forEach((val) => {
-				if (genObject.hasOwnProperty(val)) genObject[val] = true;
-			});
-		}
-	});
-	*/
+
 	requiredPerms.forEach(val => {
 		if (genObject.hasOwnProperty(val)) genObject[val] = true;
 	});

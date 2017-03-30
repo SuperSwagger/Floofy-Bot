@@ -6,7 +6,7 @@ module.exports = class BanUserCommand extends Command {
 			name: 'softban',
 			group: 'mod',
 			memberName: 'softban',
-			description: 'Softbasn a user.',
+			description: 'Softbans a user.',
 			guildOnly: true,
 
 			args: [
@@ -31,10 +31,13 @@ module.exports = class BanUserCommand extends Command {
 	async run(msg, args) {
 		const user = args.user;
 		if (!msg.channel.permissionsFor(this.client.user).hasPermission('BAN_MEMBERS')) return msg.reply('I do not have the `ban members` permission.');
-		let success = await msg.guild.ban(user, 7).catch(null);
-		if (!success) return msg.reply('There was an error trying to softban. (My role must be above the target user\'s highest role)');
-		await msg.guild.unban(user);
-		// do modlog stuff
-		return msg.reply(`${args.user.username}#${args.user.discriminator} was softbanned.`);
-	};
-}
+		if (user.id === this.client.user.id) return msg.reply('Please don\'t softban me :(');
+		const member = await msg.guild.fetchMember(args.user);
+		if (!member.bannable) return msg.reply('I am unable to softban this user, please ensure my highest role is above the target user\'s highest role!');
+
+		const message = await msg.channel.send('Softbanning user...');
+
+		await msg.guild.ban(user, 7).then(() => msg.guild.unban(user));
+		return message.edit(`${args.user.username}#${args.user.discriminator} was softbanned.`);
+	}
+};

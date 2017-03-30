@@ -27,8 +27,7 @@ module.exports = class ToggleLeaveCommand extends Command {
 	}
 
 	async run(msg, args) {
-		let settings = await guildSettings.findOne({ where: { guildID: msg.guild.id } });
-		if (!settings) settings = await guildSettings.create({ guildID: msg.guild.id });
+		const settings = await guildSettings.findOne({ where: { guildID: msg.guild.id } }) || await guildSettings.create({ guildID: msg.guild.id });
 		let leave = settings.leave;
 		leave.enabled = args.enabled;
 		settings.leave = leave;

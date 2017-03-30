@@ -29,8 +29,7 @@ module.exports = class RemoveFilterCommand extends Command {
 	}
 
 	async run(msg, args) {
-		let settings = await guildSettings.findOne({ where: { guildID: msg.guild.id } });
-		if (!settings) settings = await guildSettings.create({ guildID: msg.guild.id });
+		const settings = await guildSettings.findOne({ where: { guildID: msg.guild.id } }) || await guildSettings.create({ guildID: msg.guild.id });
 		let filter = settings.filter;
 		if (!filter.words) return msg.reply('There are no filtered words.');
 		if (!filter.words.includes(args.word)) return msg.reply(`The word \`${args.word}\` is not blacklisted.`);

@@ -1,5 +1,5 @@
 const { Command } = require('discord.js-commando');
-const Currency = require('../../currency/Currency');
+const Currency = require('../../structures/currency/Currency');
 const { stripIndents } = require('common-tags');
 const fs = require('fs');
 const path = require('path');
@@ -11,7 +11,8 @@ module.exports = class QuizCommand extends Command {
 			name: 'quiz',
 			group: 'fun',
 			memberName: 'quiz',
-			description: 'Sends a random question an expects a correct answer.'
+			description: 'Sends a random question an expects a correct answer.',
+			guildOnly: true
 		});
 
 		this.quizzes = new Map();
@@ -24,7 +25,7 @@ module.exports = class QuizCommand extends Command {
 		msg.say(item.q)
 			.then(async () => {
 				this.quizzes.set(msg.guild.id, true);
-				msg.channel.awaitMessages(answer => item.a.join('|').toLowerCase().includes(answer.content.toLowerCase()), {
+				msg.channel.awaitMessages(answer => item.a.some(possible => possible.toLowerCase() === answer.content.toLowerCase()), {
 					max: 1,
 					time: 30000,
 					errors: ['time']

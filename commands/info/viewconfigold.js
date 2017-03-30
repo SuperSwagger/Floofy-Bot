@@ -5,7 +5,7 @@ module.exports = class ViewConfigCommand extends Command {
 	constructor(client) {
 		super(client, {
 			name: 'viewconfigold',
-			group: 'config',
+			group: 'info',
 			memberName: 'viewconfigold',
 			description: 'Displays configuration for the server.',
 			guildOnly: true

@@ -285,7 +285,7 @@ module.exports = class PMDataCommand extends Command {
 			out.setColor(color);
 
 			for (item in data) {
-				if (!['flags', 'filePath'].includes(item) && data[item] !== -1 && data[item].length > 0) {
+				if (!['flags', 'filePath'].includes(item) && data[item] != -1 && data[item].toString().length > 0) {
 					out.addField(item, data[item], true);
 				}
 			}
@@ -391,7 +391,7 @@ function getAliasMatch(str, obj) {
 }
 
 function round(num, places) {
-	var multiplier = Math.pow(10, places);
+	const multiplier = Math.pow(10, places);
 	return Math.round(num * multiplier) / multiplier;
 }
 String.prototype.capitalize = function() {

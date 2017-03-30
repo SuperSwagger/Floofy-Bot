@@ -3,6 +3,7 @@ const guildSettings = require('../dataProviders/postgreSQL/models/GuildSettings'
 exports.run = async (bot, role) => {
 	const settings = await guildSettings.findOne({ where: { guildID: role.guild.id } });
 	if (!settings) return;
+	bot.funcs.logEvent(bot, 'roleDelete');
 	let flairs = settings.flairs;
 	if (flairs && flairs.roles && flairs.roles.includes(role.id)) {
 		flairs.roles.splice(flairs.roles.indexOf(role.id), 1);

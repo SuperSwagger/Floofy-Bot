@@ -6,6 +6,7 @@ module.exports = class ViewConfigCommand extends Command {
 	constructor(client) {
 		super(client, {
 			name: 'viewconfig',
+			aliases: ['showconfig'],
 			group: 'info',
 			memberName: 'viewconfig',
 			description: 'Displays configuration for the server.',
@@ -44,9 +45,9 @@ module.exports = class ViewConfigCommand extends Command {
 		if (Object.keys(settings.leave).length > 0) {
 			out += stripIndents`
 			__Leave Messages Settings__:
-			Globally Enabled: ${settings.leave.enabled} ? 'Yes' : 'No'
-			Private Messages Enabled: ${settings.leave.pm.enabled} ? 'Yes' : 'No'
-			Public Messages Enabled: ${settings.leave.public.enabled} ? 'Yes' : 'No'
+			Globally Enabled: ${settings.leave.enabled ? 'Yes' : 'No'}
+			Private Messages Enabled: ${settings.leave.pm && settings.leave.pm.enabled ? 'Yes' : 'No'}
+			Public Messages Enabled: ${settings.leave.public && settings.leave.public.enabled ? 'Yes' : 'No'}
 			public channel: ${settings.leave.channel}
 			`;
 			out += '\n';
@@ -66,14 +67,14 @@ module.exports = class ViewConfigCommand extends Command {
 	// filter
 		if (Object.keys(settings.filter).length > 0) {
 			out += stripIndents`
-			__Self-Assignable Flairs (by reaction)__:
+			__Filtered Words__:
 			${settings.filter.words.join(', ')}
 			`;
 			out += '\n';
 		}
 
 	// flairs
-		if (Object.keys(settings.flairs).length > 0) {
+		if (Object.keys(settings.flairs).length > 0 && settings.flairs.roles) {
 			out += stripIndents`
 			__Self-Assignable Flairs (by command)__:
 			${msg.guild.roles.filter(role => settings.flairs.roles.includes(role.id)).map(role => role.name).join(', ')}
@@ -81,9 +82,11 @@ module.exports = class ViewConfigCommand extends Command {
 			out += '\n';
 		}
 	// flairs by reaction (???)
-		if (Object.keys(settings.reactions).length > 0) {
-			out += '__Self-Assignable Flairs (by reaction)__';
-          // ???
+	// show role: emojiname
+		if (Object.keys(settings.reactions).length > 0 && settings.reactions.roles) {
+			out += stripIndents`__Self-Assignable Flairs (by reaction)__:
+			${msg.guild.roles.filter(role => settings.reactions.roles.includes(role.id)).map(role => role.name).join(', ')}
+			`;
 			out += '\n';
 		}
 
@@ -99,7 +102,7 @@ module.exports = class ViewConfigCommand extends Command {
 			out += stripIndents`
 			__NSFW__:
 			Globally Enabled: ${settings.nsfw.enabled}
-			Channels Whitelisted: ${settings.nsfw.channels.map(channel => msg.guild.channels.get(channel).name).join(', ')}
+			Channels Whitelisted: ${settings.nsfw.channels ? settings.nsfw.channels.map(channel => msg.guild.channels.get(channel).name).join(', ') : 'None'}
 			`;
 			out += '\n';
 		}

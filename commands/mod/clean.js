@@ -51,7 +51,7 @@ module.exports = class CleanCommand extends Command {
 	async run(msg, args) { // eslint-disable-line consistent-return
 		let botMember = await msg.guild.fetchMember(msg.client.user);
 		if (!botMember.hasPermission('MANAGE_ROLES_OR_PERMISSIONS')) return msg.reply('I do not have the `manage roles` permission.');
-		const limit = args.limit;
+		const limit = args.limit === 100 ? 99 : args.limit;
 		const filter = args.filter.toLowerCase();
 		let messageFilter;
 

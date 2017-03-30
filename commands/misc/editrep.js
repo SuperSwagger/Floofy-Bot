@@ -40,20 +40,11 @@ module.exports = class RepAddCommand extends Command {
 				reputationBy: msg.author.id
 			}
 		});
-		console.log(alreadyRepped);
 
 		if (!alreadyRepped) return msg.reply(`you have *not* already given a ${settings.customRep ? settings.customRep : 'positive reputation'} point to this user.`);
 
 		alreadyRepped.reputationMessage = message;
 		await alreadyRepped.save();
-		/*
-		await UserRep.create({
-			userID: member.id,
-			reputationType: '+',
-			reputationBy: msg.author.id,
-			reputationMessage: message || null
-		});
-		*/
 
 		return msg.reply(`you've successfully changed a ${settings.customRep ? settings.customRep : 'positive reputation'} point to ${member.displayName}.`);
 	}

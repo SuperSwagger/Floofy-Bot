@@ -41,6 +41,7 @@ module.exports = class ProfileCommand extends Command {
 						return true;
 					},
 					parse: (str) => {
+						if (delOptions.includes(str.toLowerCase())) return str.toLowerCase();
 						return str.replace(/(@)/g, '@\u200b');
 					}
 				}

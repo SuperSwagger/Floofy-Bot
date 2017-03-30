@@ -36,8 +36,8 @@ module.exports = class HypnohubCommand extends Command {
 					return msg.channel.send('There was an error retrieving posts.');
 				}	else {
 					let body = JSON.parse(res.text);
-					for (var i = 0; i < 101; i++) {
-						var rand = Math.floor(Math.random() * 101);
+					for (let i = 0; i < 101; i++) {
+						const rand = Math.floor(Math.random() * 101);
 						if (body[rand] && body[rand].file_url) {
 							str = `http://${body[rand].file_url.substring(2)}`;
 							break;

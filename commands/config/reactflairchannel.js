@@ -27,8 +27,7 @@ module.exports = class ReactFlairChannelCommand extends Command {
 	}
 
 	async run(msg, args) {
-		let settings = await guildSettings.findOne({ where: { guildID: msg.guild.id } });
-		if (!settings) settings = await guildSettings.create({ guildID: msg.guild.id });
+		const settings = await guildSettings.findOne({ where: { guildID: msg.guild.id } }) || await guildSettings.create({ guildID: msg.guild.id });
 		let reactions = settings.reactions;
 		reactions.channel = args.channel.id;
 		settings.reactions = reactions;

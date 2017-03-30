@@ -33,7 +33,7 @@ module.exports = class ReactFlairHelpCommand extends Command {
 				},
 				{
 					name: '\u200b',
-					value: 'Here is a gif showcasing how this works! **waiting on fudge for gif**'
+					value: 'Here is a short clip showcasing how this works! https://streamable.com/g1vtj\nIf it doesn\'t detect reactions, try pinning the message and seeing if it works!'
 				}
 			]
 		});

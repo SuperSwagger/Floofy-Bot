@@ -8,6 +8,7 @@ module.exports = class WhoCommand extends Command {
 			memberName: 'who',
 			description: 'Ask question and receive a random answer.',
 			examples: ['who will get married in their lifetime?'],
+			guildOnly: true,
 
 			args: [
 				{

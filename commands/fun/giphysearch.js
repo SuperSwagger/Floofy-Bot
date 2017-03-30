@@ -30,7 +30,7 @@ module.exports = class GiphySearchCommand extends Command {
 
 		superagent.get(link)
 			.then(res => {
-				return msg.say(res.body.data[Math.floor(Math.random() * res.body.data.length)].images.original.url);
+				return msg.reply(res.body.data[Math.floor(Math.random() * res.body.data.length)].images.original.url).catch(() => msg.reply('there were no results.'));
 			})
 			.catch(err => {
 				msg.say('There was an error, please try again later.');

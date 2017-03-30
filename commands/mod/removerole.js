@@ -36,7 +36,10 @@ module.exports = class RemoveRoleCommand extends Command {
 		const botMember = await msg.guild.fetchMember(msg.client.user);
 		if (!botMember.hasPermission('MANAGE_ROLES_OR_PERMISSIONS')) return msg.reply('I do not have the `manage roles` permission.');
 		// const role = message.guild.roles.filter(ro => ro.name.toLowerCase() === role.toLowerCase()).first();
-		await member.removeRole(args.role.name);
+		if (!member.roles.has(role.id)) return msg.reply('the target user doesn\'t even have that role!');
+		if (botMember.highestRole.comparePositionTo(role) < 1) return msg.reply('I do not have permissions to edit this role, please check role order!');
+		if (msg.member.highestRole.comparePositionTo(args.role) < 1) return msg.reply('you do not have access to this role, please check role order!');
+		await member.removeRole(args.role);
 		return msg.reply(`I have removed ${role.name} from ${user.username}.`);
 	}
 };

@@ -46,8 +46,7 @@ module.exports = class CreateCommandCommand extends Command {
 	}
 
 	async run(msg, args) {
-		let settings = await guildSettings.findOne({ where: { guildID: msg.guild.id } });
-		if (!settings) settings = await guildSettings.create({ guildID: msg.guild.id });
+		const settings = await guildSettings.findOne({ where: { guildID: msg.guild.id } }) || await guildSettings.create({ guildID: msg.guild.id });
 		let customcommands = settings.customcommands;
 		if (args.name.includes(',') || args.name.includes('|')) return msg.reply(`The way commands are made has been redone. Please use ${msg.guild.commandPrefix}help createcommand for more information.`);
 		customcommands[args.name] = {};

@@ -31,26 +31,15 @@ module.exports = class WarnCommand extends Command {
 	}
 
 	async run(msg, args) {
-		const member = args.member;
+		const { member } = args;
 		if (msg.author.id === member.user.id) return msg.channel.send('If you try to warn yourself, you\'re gonna have a *baaad* time.');
 		if (msg.client.funcs.isStaff(member)) return msg.channel.send('You cannot warn a fellow staff member!');
-
-		const mod = new Case(msg.author, member, args.reason, 'warning');
-		const channel = await mod.getChannel().catch(null);
-		if (!channel) return msg.reply('There is no channel for modlogs set.');
-
-		mod.addCase();
+		const channel = msg.guild.channels.find('name', 'modlogs');
+		if (!channel) return msg.reply('There is no channel for modlogs set. Please create one called `modlogs` to get started!');
+		const mod = new Case(msg.author, member.user, msg.guild, args.reason, 'warning');
 		let message = await msg.channel.send('Warning user...');
-		const embed = new this.client.methods.Embed();
-		embed.setAuthor(mod.getMod('user'), mod.getMod('avatar'));
-		embed.setDescription(mod.formatDescription());
-		embed.setFooter(mod.formatFooter());
-		embed.setColor(mod.getColor());
-		const caseMessage = await msg.guild.channels.get(channel).sendEmbed(embed);
-		mod.addCaseMessageID(caseMessage.id);
-
-		await member.send(`You've received a warning in ${msg.guild.name}.\n\`Reason:\` ${args.reason}`);
-		await mod.saveCase();
+		await mod.postCase();
+		await member.send(`You've received a warning in ${msg.guild.name}.\n\`Reason: ${args.reason}`);
 		return message.edit(`Successfully warned ${member.user.username}.`);
 	}
 };

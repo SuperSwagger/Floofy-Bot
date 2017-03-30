@@ -36,6 +36,7 @@ module.exports = class AddReactFlairCommand extends Command {
 		let reactions = settings.reactions;
 		if (!reactions.roles) reactions.roles = [];
 		if (!reactions.emojis) reactions.emojis = [];
+		if (reactions.roles.includes(args.role.id)) return msg.reply('this role is already assigned to an emoji!');
 		reactions.roles.push(args.role.id);
 		reactions.emojis.push(args.emoji.hasOwnProperty('id') ? args.emoji.id : args.emoji);
 		settings.reactions = reactions;

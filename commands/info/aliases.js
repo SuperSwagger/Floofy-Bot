@@ -26,9 +26,9 @@ module.exports = class UserInfoCommand extends Command {
 
 	async run(msg, args) {
 		const Usernames = await Username.findAll({ where: { userID: args.member.id } });
-		return msg.channel.send(stripIndents`
+		return msg.reply(stripIndents`
 			Alises for the user ${args.member.displayName}:
-			Aliases: ${Usernames.length ? Usernames.map(uName => uName.username).join(', ') : args.member.user.username}
+			${Usernames.length ? Usernames.map(uName => uName.username).join(', ') : args.member.user.username}
 			`, { split: true });
 	}
 };

@@ -29,8 +29,7 @@ module.exports = class ToggleFilterCommand extends Command {
 	}
 
 	async run(msg, args) {
-		let settings = await guildSettings.findOne({ where: { guildID: msg.guild.id } });
-		if (!settings) settings = await guildSettings.create({ guildID: msg.guild.id });
+		const settings = await guildSettings.findOne({ where: { guildID: msg.guild.id } }) || await guildSettings.create({ guildID: msg.guild.id });
 		let filter = settings.filter;
 		filter.enabled = args.enabled;
 		settings.filter = filter;

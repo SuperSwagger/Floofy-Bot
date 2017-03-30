@@ -20,7 +20,7 @@ module.exports = class WelcomeHelpCommand extends Command {
 			fields: [
 				{
 					name: '**Step 1**: Tag',
-					value: 'Use this to set up your tag for your profile!\nExample: `.sp nnid Lewdcario`.'
+					value: 'Use this to set up your tag for your profile!\nExample: `.sp tag Lewdcario`.'
 				},
 				{
 					name: '**Step 2**: Game',

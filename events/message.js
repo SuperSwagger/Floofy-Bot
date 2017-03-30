@@ -1,10 +1,146 @@
-exports.run = async (bot, message) => {
+const Experience = require('../structures/currency/Experience');
+const Currency = require('../structures/currency/Currency');
+
+const Redis = require('../dataProviders/redis/Redis');
+const redis = new Redis();
+
+let earnedRecently = [];
+let gainedXPRecently = [];
+// const earnedRecently = new Map();
+// const gainedXPRecently = new Map();
+
+exports.run = async (bot, message) => { // eslint-disable-line
+	/*
+	if (!message.guild && message.author.id !== bot.user.id && message.author.id !== bot.options.owner) {
+		bot.channels.get('185885575985758208').sendMessage(`**${message.author.username}**#${message.author.discriminator} (${message.author.id})` `\n${message.content}`).catch(: () => null);
+	}
+	*/
+	if (!message.guild || message.author.bot) return null;
+
+	const member = message.member || await message.guild.fetchMember(message.author);
+
+	const mute = await redis.db.getAsync(`mute${message.guild.id}`).then(JSON.parse);
+	if (mute && mute.includes(message.author.id)) return message.delete();
+
+	const inviteFilter = await redis.db.getAsync(`invitefilter${message.guild.id}`).then(JSON.parse);
+	const inviteRegex = /(discord\.gg\/.+|discordapp\.com\/invite\/.+)/i;
+	if (!bot.funcs.isStaff(member) && inviteFilter && inviteRegex.test(message.content.toLowerCase())) return message.delete().then(() => message.reply('advertisement is prohibited in this server.'));
+
+	const words = await redis.db.getAsync(`filter${message.guild.id}`).then(JSON.parse);
+	const enabled = await redis.db.getAsync(`filterenabled${message.guild.id}`).then(JSON.parse);
+	if (enabled && words) {
+		if (!bot.funcs.isStaff(member) && bot.funcs.hasFilteredWord(words, bot.funcs.filterWord(message.content))) {
+			await message.author.send(`Your message was deleted due to breaking the filter!\nContent: \`${message.content}\``);
+			return message.delete();
+		}
+	}
+	const slowmode = await redis.db.hgetallAsync(`slowmode${message.guild.id}`);
+	if (slowmode && JSON.parse(slowmode.enabled)) {
+		const slowuser = await redis.db.hgetallAsync(`slowuser${message.guild.id}${message.author.id}`) || { tokens: 0, lastUpdate: new Date().getTime() };
+		if (new Date().getTime() - slowuser.lastUpdate > slowmode.cooldown * 1000) {
+			await redis.db.del(`slowuser${message.guild.id}${message.author.id}`);
+		} else if (slowuser.tokens === slowmode.tokens) {
+			return message.author.send('Your message was deleted due to speaking too fast during slowmode.').then(() => message.delete());
+		}	else {
+			const tokens = parseInt(slowuser.tokens);
+			await redis.db.hmsetAsync(`slowuser${message.guild.id}${message.author.id}`, { tokens: tokens + 1 });
+		}
+	}
+
+	const channelLocks = message.guild.settings.get('locks', []);
+	if (!channelLocks.includes(message.channel.id) && earnedRecently.includes(message.author.id)) {
+	// if (!channelLocks.includes(message.channel.id) && earnedRecently.has(message.author.id)) {
+		const hasImageAttachment = message.attachments.some(attachment => /\.(png|jpg|jpeg|gif|webp)$/.test(attachment.url));
+		const moneyEarned = hasImageAttachment ? Math.ceil(Math.random() * 7) + 5 : Math.ceil(Math.random() * 7) + 1;
+
+		// Currency.addBalance(message.author.id, moneyEarned);
+		Currency._changeBalance(message.author.id, moneyEarned);
+
+		// earnedRecently.set(message.author.id);
+		earnedRecently.push(message.author.id);
+		setTimeout(() => {
+			// earnedRecently.delete(message.author.id);
+			const index = earnedRecently.indexOf(message.author.id);
+			earnedRecently.splice(index, 1);
+		}, 8000);
+
+		if (!gainedXPRecently.includes(message.author.id)) {
+		// if (!gainedXPRecently.has(message.author.id)) {
+			const xpEarned = Math.ceil(Math.random() * 9) + 3;
+			const oldLevel = await Experience.getLevel(message.author.id);
+			Experience.addExperience(message.author.id, xpEarned).then(async () => {
+				const newLevel = await Experience.getLevel(message.author.id);
+
+				if (newLevel > oldLevel) {
+					Currency._changeBalance(message.author.id, 100 * newLevel);
+					const notifs = message.guild.settings.get('levelNotifs', false);
+					if (notifs) message.reply(`Congratulations, you have leveled up to Level ${newLevel}!`);
+				}
+			}).catch(() => null);
+
+			// gainedXPRecently.set(message.author.id);
+			gainedXPRecently.push(message.author.id);
+			setTimeout(() => {
+				// gainedXPRecently.delete(message.author.id);
+				const index = gainedXPRecently.indexOf(message.author.id);
+				gainedXPRecently.splice(index, 1);
+			}, 60 * 1000);
+		}
+	}
 	// memes
-	let input = message.content.toLowerCase();
-	let prefix = message.guild ? (message.guild.commandPrefix ? message.guild.commandPrefix : bot.commandPrefix) : bot.commandPrefix;
-	if (!input.startsWith(prefix) && !input.length <= 2) return;
-	if (message.guild && !message.channel.permissionsFor(bot.user).hasPermission('SEND_MESSAGES')) return;
+	const input = message.content.toLowerCase();
+	const prefix = message.guild ? message.guild.commandPrefix ? message.guild.commandPrefix : bot.commandPrefix : bot.commandPrefix;
+	if (!input.startsWith(prefix) && !input.length <= 2) return null;
+	if (message.guild && !message.channel.permissionsFor(bot.user).hasPermission('SEND_MESSAGES')) return null;
 	let cmd = input.slice(1).split(' ')[0];
+
+	/*
+	const commands = {
+		nicememe: () => message.channel.sendFile('http://i.imgur.com/vSFbKbF.gelse if'),
+		eyes: () => message.channel.sendFile('https://cdn.discordapp.com/attachments/146477690885636096/176038770292817921/eyes.gif'),
+		dense: () => message.channel.send(),
+		dip: () => message.channel.send(),
+		hollywood: () => message.channel.send(),
+		welp: () => message.channel.send(),
+		sexybowser: () => message.channel.send(),
+		fu: () => message.channel.send(),
+		fthis: () => message.channel.send(),
+		chew: () => message.channel.send(),
+		shitpost: () => message.channel.send(),
+		anger: () => message.channel.send(),
+		umad: () => message.channel.send(),
+		ez$: () => message.channel.send(),
+		hd: () => message.channel.send(),
+		flip: () => message.channel.send(),
+		triggered: () => message.channel.send(),
+		addup: () => message.channel.send(),
+		sol: () => message.channel.send(),
+		learn: () => message.channel.send(),
+		vroom: () => message.channel.send(),
+		awoo: () => message.channel.send(),
+		learn: () => message.channel.send(),
+		timmysux: () => message.channel.send(),
+		aura: () => message.channel.send(),
+		luma: () => message.channel.send(),
+		yee: () => message.channel.send(),
+		cs: () => message.channel.send(),
+		fudge: () => message.channel.send(),
+		wtf: () => message.channel.send(),
+		concern: () => message.channel.send(),
+		uwu: () => message.channel.send(),
+		zero: () => message.channel.send(),
+		cracks: () => message.channel.send(),
+		freedom: () => message.channel.send(),
+		attention: () => message.channel.send(),
+		attention: () => message.channel.send(),
+		attention: () => message.channel.send(),
+		lewdmemes: () => {
+			const shit = 'https://cdn.discordapp.com/attachments/147355328852262912/169638582154166274/unknown.png;https://cdn.discordapp.com/attachments/147355328852262912/169638633903489025/unknown.png;https://cdn.discordapp.com/attachments/168529548625838091/169786680197251073/Screen_Shot_2016-04-13_at_8.31.10_AM.png;http://prntscr.com/au0kdf;http://prntscr.com/au0asy;http://prntscr.com/av84j9;https://cdn.discordapp.com/attachments/147355328852262912/170301845506490369/unknown.png;https://cdn.discordapp.com/attachments/147355328852262912/169638411517427713/unknown.png;https://cdn.discordapp.com/attachments/146391778566602752/172931331989307393/Screen_Shot_2016-04-22_at_12.49.50_AM.png;https://cdn.discordapp.com/attachments/147355328852262912/170295971035611137/unknown.png;http://prntscr.com/atx35m;https://cdn.discordapp.com/attachments/147355328852262912/170072655070887936/unknown.png;http://prntscr.com/au1o48;https://cdn.discordapp.com/attachments/147355328852262912/169641054092394497/unknown.png;https://cdn.discordapp.com/attachments/147355328852262912/169638527246532609/unknown.png;https://cdn.discordapp.com/attachments/147355328852262912/169643220173717505/unknown.png;https://cdn.discordapp.com/attachments/147355328852262912/170303200560152577/unknown.png;https://cdn.discordapp.com/attachments/147355328852262912/169961995444027393/unknown.png;https://cdn.discordapp.com/attachments/147355328852262912/169638039029547011/unknown.png;https://cdn.discordapp.com/attachments/147355328852262912/169961945019973633/unknown.png;https://cdn.discordapp.com/attachments/147355328852262912/170298264111808524/unknown.png;http://prntscr.com/axr5qv;http://prntscr.com/axr5sw;http://prntscr.com/axr5ua;http://prntscr.com/axr5w8;http://prntscr.com/axr5xy;http://prntscr.com/axr5za;http://prntscr.com/axr61h;http://prntscr.com/ay3n9l;http://prntscr.com/ay3nbc;http://prntscr.com/ay3y86;http://prntscr.com/ay5g2c;http://prntscr.com/ay5hu8;http://prntscr.com/ayji0j;http://prntscr.com/ayqoyj;http://prntscr.com/ayqrzn;http://prntscr.com/az2xrf;http://prntscr.com/azx56r;http://prntscr.com/b01lby;http://i.imgur.com/lDISBNg.png;http://i.imgur.com/oQ5atLS.png;http://prntscr.com/b0f5v1;http://prntscr.com/b0f73d;http://prntscr.com/b0gcg7;http://i.imgur.com/MvU4YbE.png;http://i.imgur.com/z6fAbYB.png;http://i.imgur.com/mHwuXpH.png;http://prntscr.com/b0qoqn;http://prntscr.com/b0sdzf;http://prntscr.com/b0se04;http://prntscr.com/b0uhv8;http://prntscr.com/b144bh;http://prntscr.com/b16a33;http://prntscr.com/b1r1pi;http://prntscr.com/b1rl6a;http://prntscr.com/b1t8d0;http://prntscr.com/b1utmz;http://prntscr.com/b1vg8x;http://prntscr.com/b1vluz;https://cdn.discordapp.com/attachments/147355328852262912/179049869724352513/unknown.png;http://prntscr.com/b1w2ce;https://cdn.discordapp.com/attachments/147355328852262912/179113054015979522/unknown.png;http://i.imgur.com/ba53ydE.png;http://prntscr.com/b26vdr;http://prntscr.com/b28kiu;http://prntscr.com/b28mt7;http://prntscr.com/b2mah2;http://prntscr.com/b2y055;http://prntscr.com/b1i5j9;http://prntscr.com/b5rhvt;http://i.imgur.com/nu49Yxy.png;http://prntscr.com/b6kw2z;http://prntscr.com/b6l1zk;http://prntscr.com/b6xbeu;http://i.imgur.com/n07dJBW.png;http://prntscr.com/bd9dnf;http://prntscr.com/bv1c9z;http://prntscr.com/btev9s;http://prntscr.com/bovt0n;http://prntscr.com/boi2h9;http://prntscr.com/boeph3;http://prntscr.com/bnld9u;http://prntscr.com/bmu3rc;http://prntscr.com/bmu3ez;http://prntscr.com/bmfscv;http://prntscr.com/bmf7cf;http://prntscr.com/bk3lc6;http://prntscr.com/bk33hh;http://prnt.sc/bv1fw5;http://prntscr.com/bgw1nj;http://prntscr.com/bv1g0b;http://prntscr.com/bg11h6;http://prntscr.com/bv1g5r;http://prntscr.com/bg1qn5;http://prntscr.com/bv1gbm;http://prntscr.com/bzbluh;http://imgur.com/d3xkwFz.png;http://imgur.com/HV6LyDV.png;http://imgur.com/knpEsns.png;http://imgur.com/whnkolq.png;http://imgur.com/aPJxOdW.png;http://imgur.com/pvfNnpk.png;http://imgur.com/0Ti6M3J.png;http://imgur.com/EQb12V6.png;http://imgur.com/itdgQAp.png;http://imgur.com/z0eYijT.png;http://imgur.com/bvYtomT.png;http://imgur.com/hCjRRjN.png;http://imgur.com/rMvPs18.png;http://imgur.com/T5nnLB4.png;http://imgur.com/eusaPuy.png;'.split(';');
+			message.channel.send(`${shit[Math.floor(Math.random() * shit.length)]}`);
+		}
+	};
+	commands[cmd]();
+	*/
 
 	if (cmd === 'nicememe') {
 		message.channel.sendFile('http://i.imgur.com/vSFbKbF.gelse if');
@@ -57,7 +193,7 @@ exports.run = async (bot, message) => {
 		message.channel.sendFile('https://cdn.discordapp.com/attachments/168788080000499712/198879081704587265/dream.PNG');
 	}	else if (cmd === 'vroom') {
 		message.channel.sendFile('https://cdn.discordapp.com/attachments/144552169398337536/198902886095126540/vroomvroom.jpg');
-	}		else if (cmd === 'kami') {
+	}	else if (cmd === 'kami') {
 		let items = ['http://imgur.com/mREblNB.png', 'http://imgur.com/goEzeIx.png', 'http://imgur.com/KH0YAbo.png', 'http://imgur.com/agrOXqg.png', 'http://imgur.com/U1Krp30.png', 'http://imgur.com/7YczH7k.png', 'http://imgur.com/MJyOdKe.png', 'http://imgur.com/ZK6Z2KF.png', 'http://imgur.com/0gWzlhA.png', 'http://imgur.com/XfPPcOi.png', 'http://prnt.sc/bv4y66'];
 		message.channel.send(`${items[Math.floor(Math.random() * items.length)]}`);
 	}	else if (cmd === 'steam' || cmd === 'keti' || cmd === 'stem') {
@@ -78,7 +214,7 @@ exports.run = async (bot, message) => {
 	}	else if (cmd === 'coding') {
 		message.channel.send('<http://www.stilldrinking.org/programming-sucks>');
 	}	else if (cmd === 'luma') {
-		let items = ['https://gfycat.com/PeacefulRealEgg', 'http://oddshot.tv/shot/showdowngg-2016011753143824', 'http://oddshot.tv/shot/showdowngg-2016011613218276', 'http://i.imgur.com/NtohbyB.gifv', 'http://i.imgur.com/r6wTqQS.gif', 'http://m.imgur.com/6Uq556t?r', 'https://youtu.be/F3XN3m-6q7w', 'http://m.imgur.com/G1YljDl.gif', 'http://i.imgur.com/qdpOywW.gifv', 'https://www.youtube.com/watch?v=ArXIuKNBdW4', 'https://twitter.com/LettuceUdon/status/741881064130367488', 'http://i.imgur.com/Zqiy6u9.gif', 'https://images-2.discordapp.net/.eJwFwdsRhCAMAMBeKIAAGh62YQUcMtHxEQbi1831frtf9fZLLWoXaWMB2I5RuG96CPdMVRMzXTW3Y-jCN2SRXPa7PjIgJuOTsc5g9OiDj2ATIrppdtZ4DCbgDJ0-E52rbg-p3x_j6yI0.Pgjy7k_cFbM9aFiepZGuXfQ13Fw.png', 'https://twitter.com/DabuzSenpai/status/746102034793963524', 'https://oddshot.tv/shot/MVG_League/UzrqS3q_qS1P34GJkhfWT-Of', 'https://gfycat.com/RealYellowBuckeyebutterfly', 'https://i.gyazo.com/e0af536fb2a9796b930ea5155a337453.gif', 'http://i.imgur.com/Jcxt4Yd.gifv', 'http://i.imgur.com/UrEcikV.gifv', 'http://i.imgur.com/aWPl6hS.gifv', 'https://gfycat.com/FewHappyAmericanalligator'];
+		let items = ['https://gfycat.com/PeacefulRealEgg', 'http://oddshot.tv/shot/showdowngg-2016011753143824', 'http://oddshot.tv/shot/showdowngg-2016011613218276', 'http://i.imgur.com/NtohbyB.gifv', 'http://i.imgur.com/r6wTqQS.gif', 'http://m.imgur.com/6Uq556t?r', 'https://youtu.be/F3XN3m-6q7w', 'http://m.imgur.com/G1YljDl.gif', 'http://i.imgur.com/qdpOywW.gifv', 'https://www.youtube.com/watch?v=ArXIuKNBdW4', 'https://twitter.com/LettuceUdon/status/741881064130367488', 'http://i.imgur.com/Zqiy6u9.gif', 'https://images-2.discordapp.net/.eJwFwdsRhCAMAMBeKIAAGh62YQUcMtHxEQbi1831frtf9fZLLWoXaWMB2I5RuG96CPdMVRMzXTW3Y-jCN2SRXPa7PjIgJuOTsc5g9OiDj2ATIrppdtZ4DCbgDJ0-E52rbg-p3x_j6yI0.Pgjy7k_cFbM9aFiepZGuXfQ13Fw.png', 'https://twitter.com/DabuzSenpai/status/746102034793963524', 'https://oddshot.tv/shot/MVG_League/UzrqS3q_qS1P34GJkhfWT-Of', 'https://gfycat.com/RealYellowBuckeyebutterfly', 'https://i.gyazo.com/e0af536fb2a9796b930ea5155a337453.gif', 'http://i.imgur.com/Jcxt4Yd.gifv', 'http://i.imgur.com/UrEcikV.gifv', 'http://i.imgur.com/aWPl6hS.gifv', 'https://gfycat.com/FewHappyAmericanalligator', 'https://twitter.com/SmLysomali/status/807769817453248512', 'https://clips.twitch.tv/evenmatchupgaming/ConcernedRatTTours', 'https://gfycat.com/LimpPhonyGuillemot', 'https://clips.twitch.tv/tourneylocator/VivaciousGorillaOneHand', 'https://oddshot.tv/shot/Uzq1ckkC1clDPb0vmVV2KX3x', 'https://oddshot.tv/s/Lkf5ZV'];
 		message.channel.send(`${items[Math.floor(Math.random() * items.length)]}`);
 	}	else if (cmd === 'yee') {
 		message.channel.sendFile('http://i.imgur.com/RNOVPGx.gelse if');
@@ -129,6 +265,9 @@ exports.run = async (bot, message) => {
 	}	else if (cmd === 'cubone') {
 		let items = ['http://i.imgur.com/TkyrRd0.png', 'http://i.imgur.com/qkj8bhs.jpg', 'http://i.imgur.com/tYIBw4L.gifv', 'http://i.imgur.com/ipAkVbm.gifv', 'http://i.imgur.com/4RvTLjZ.gifv', 'http://i.imgur.com/HZQhw1q.gifv', 'http://i.imgur.com/I1kj114.gifv', 'http://i.imgur.com/ek3fzvn.gifv', 'http://i.imgur.com/zcybazG.gifv', 'http://i.imgur.com/x1O72ML.jpg', 'http://i.imgur.com/JVNwWqN.jpg', 'http://i.imgur.com/vWW6FP4.png', 'http://i.imgur.com/rscbdae.gifv', 'http://i.imgur.com/JspXNk6.gifv', 'http://i.imgur.com/TuGCzz4.gifv', 'http://i.imgur.com/a5uoyrG.gifv', 'http://i.imgur.com/xp20vTR.png', 'http://i.imgur.com/Shh35yg.jpg', 'http://i.imgur.com/QDHuREs.png', 'http://i.imgur.com/IK04L1c.gifv', 'http://i.imgur.com/qBrCOx4.png', 'http://i.imgur.com/zotN37K.gifv', 'http://i.imgur.com/lOWqC4p.gifv', 'http://i.imgur.com/F3M16p7.gifv', 'http://i.imgur.com/UlgWDfW.gifv', 'http://i.imgur.com/BSuGTRn.png', 'http://i.imgur.com/vcNRk9i.gifv', 'http://i.imgur.com/eAhKfOh.gifv'];
 		message.channel.send(`${items[Math.floor(Math.random() * items.length)]}`);
+	}	else if (cmd === 'fox') {
+		let items = ['http://i.imgur.com/E9h9jjG.jpg', 'http://i.imgur.com/sejLqye.jpg', 'http://i.imgur.com/Prud3J8.jpg', 'http://i.imgur.com/hKsvbAz.jpg', 'http://i.imgur.com/XVUa8qz.jpg', 'http://i.imgur.com/zbMygHd.jpg', 'http://i.imgur.com/Dyb3l64.jpg', 'http://i.imgur.com/ztsQKDK.jpg', 'http://i.imgur.com/hG51dwj.jpg', 'http://i.imgur.com/lzhJAqS.jpg', 'http://i.imgur.com/xvVVD8l.jpg', 'http://i.imgur.com/8sXQe2Z.jpg', 'http://i.imgur.com/KjOI83f.jpg', 'http://i.imgur.com/t4g9iHk.jpg', 'http://i.imgur.com/E5IBytu.jpg', 'http://i.imgur.com/A1Nym61.jpg', 'http://i.imgur.com/mxXVwnO.jpg', 'http://i.imgur.com/mg8c9Av.jpg', 'http://i.imgur.com/YRC6siA.jpg', 'http://i.imgur.com/0onwkWp.jpg', 'http://i.imgur.com/nK7fMLN.jpg', 'http://i.imgur.com/Of066Oe.jpg', 'http://i.imgur.com/O3bDlGD.png', 'http://i.imgur.com/vn2okLM.jpg', 'http://i.imgur.com/oX9l6LC.jpg', 'http://i.imgur.com/5yuDMUu.jpg', 'http://i.imgur.com/mfI33Kk.jpg', 'http://i.imgur.com/xHNi7A9.jpg', 'http://i.imgur.com/qPPUjj5.jpg', 'http://i.imgur.com/DZkCEYz.jpg', 'http://i.imgur.com/X6fAwAJ.jpg', 'http://i.imgur.com/6i6470a.jpg', 'http://i.imgur.com/2YBAUM5.jpg', 'http://i.imgur.com/GjIB7jK.jpg', 'http://i.imgur.com/Jpk7Lae.jpg', 'http://i.imgur.com/8sXnqW9.jpg', 'http://i.imgur.com/IDQtHt9.jpg', 'http://i.imgur.com/F8XBi2T.jpg', 'http://i.imgur.com/KOsusQu.jpg', 'http://i.imgur.com/HrRJOxn.jpg', 'http://i.imgur.com/fuiOHCG.jpg', 'http://i.imgur.com/UL5lpQd.jpg', 'http://i.imgur.com/hzhAICr.jpg', 'http://i.imgur.com/PKyfWmf.jpg', 'http://i.imgur.com/7u8V2sV.jpg', 'http://i.imgur.com/hyXuiN3.jpg', 'http://i.imgur.com/aLsonxv.png', 'http://i.imgur.com/3gGj0wY.jpg', 'http://i.imgur.com/uBPbGp7.jpg', 'http://i.imgur.com/jMtFM8P.jpg', 'http://i.imgur.com/3j7APqf.jpg', 'http://i.imgur.com/0fjskvl.jpg', 'http://i.imgur.com/NiETt2g.jpg', 'http://i.imgur.com/wNr8Avl.jpg', 'http://i.imgur.com/cFsSz0r.jpg', 'http://i.imgur.com/f5gOTDK.jpg', 'http://i.imgur.com/crzU6qn.jpg', 'http://i.imgur.com/LYkZlv8.jpg', 'http://i.imgur.com/qEzH7mY.jpg', 'http://i.imgur.com/Ab6bnqU.jpg', 'http://i.imgur.com/DMtWrHr.jpg', 'http://i.imgur.com/3slWUpx.jpg', 'http://i.imgur.com/hU4QsF6.jpg', 'http://i.imgur.com/qyis6iX.jpg'];
+		message.channel.sendFile(`${items[Math.floor(Math.random() * items.length)]}`);
 	}	else if (cmd === 'epic') {
 		let items = ['http://imgur.com/5wtRbzm.png', 'http://imgur.com/clEvBDU.png'];
 		message.channel.sendFile(`${items[Math.floor(Math.random() * items.length)]}`);
@@ -142,11 +281,9 @@ exports.run = async (bot, message) => {
 	} else {
 		cmd = message.content.slice(1).split(' ')[0];
 		// need to convert them all to lowercase
-		if (!message.guild) return;
-		const Redis = require('../dataProviders/redis/Redis');
-		const redis = new Redis();
-		const customcommand = await redis.db.getAsync(`customcommand${message.guild.id}${cmd}`);
-		if (!customcommand) return;
+		if (!message.guild) return null;
+		const customcommand = await redis.db.getAsync(`customcommand${message.guild.id}${cmd}`) || await redis.db.getAsync(`customcommand${message.guild.id}${cmd.toLowerCase()}`);
+		if (!customcommand) return null;
 		if (customcommand.constructor === Array) {
 			let output = '';
 			let response = customcommand;
@@ -158,12 +295,14 @@ exports.run = async (bot, message) => {
 					output += outcomes[Math.floor(Math.random() * outcomes.length)].trim();
 				}
 			}
-			message.channel.send(output);
+			await message.channel.send(output);
 		} else {
-			message.channel.send(customcommand.replace(/\$rand:?{[^}]*}/g, (text) => {
+			await message.channel.send(customcommand.replace(/\$rand:?{[^}]*}/g, (text) => {
 				text = text.substring(6, text.length - 1).split(';');
 				return text[Math.floor(Math.random() * text.length)];
 			}));
 		}
 	}
+
+	message = null;
 };

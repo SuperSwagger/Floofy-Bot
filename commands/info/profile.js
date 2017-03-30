@@ -38,9 +38,9 @@ module.exports = class ProfileCommand extends Command {
 	}
 
 	async run(message, args) {
-		let bot = message.client;
-		let embed = new bot.methods.Embed();
-		const user = args.user.hasOwnProperty('id') ? args.user : message.author;
+		const bot = message.client;
+		const embed = new bot.methods.Embed();
+		const user = args.user || message.author;
 		const profile = await UserProfile.findOne({ where: { userID: user.id } });
 		if (!profile) return message.reply('no profile has been set here!');
 		if (user === bot.users.get(owner)) {
