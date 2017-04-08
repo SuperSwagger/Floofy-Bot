@@ -1,4 +1,3 @@
-const Discord = require('discord.js');
 const { Command } = require('discord.js-commando');
 const moment = require('moment');
 require('moment-duration-format');
@@ -18,7 +17,7 @@ module.exports = class StatsCommand extends Command {
 	}
 
 	async run(msg) {
-		const embed = new Discord.RichEmbed();
+		const embed = new this.client.methods.Embed();
 		const pid = process.pid;
 		usage.lookup(pid, (err, result) => {
 			if (err) return console.error(err);

@@ -33,7 +33,7 @@ module.exports = class UserInfoCommand extends Command {
 
 
 function fetch(bot, discrim) {
-	return new Promise((resolve, reject) => {
+	return new Promise((resolve) => {
 		resolve(bot.users.filter(user => user.discriminator === discrim).map(user => user.username));
 	});
 }

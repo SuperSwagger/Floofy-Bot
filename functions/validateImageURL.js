@@ -1,8 +1,10 @@
 const { URL } = require('url');
 const winston = require('../structures/Logger.js');
 const path = require('path');
+const { client } = require('../bot.js');
 
 module.exports = (message) => {
+	client.log.logFunc('validateImageURL');
 	let attachmentImage = null;
 	const extensions = new Set(['.png', '.jpg', '.jpeg', '.gif', '.webp']);
 	const linkRegex = /https?:\/\/(?:\w+\.)?[\w-]+\.[\w]{2,3}(?:\/[\w-_\.]+)+\.(?:png|jpg|jpeg|gif|webp)/; // eslint-disable-line no-useless-escape

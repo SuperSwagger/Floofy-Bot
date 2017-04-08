@@ -15,6 +15,11 @@ module.exports = class ListAvailableRolesCommand extends Command {
 	async run(msg) {
 		const settings = await guildSettings.findOne({ where: { guildID: msg.guild.id } });
 		if (!settings || settings.flairs.roles.length === 0) return msg.reply('there are no settings associated with this guild...😦');
-		return msg.say(msg.guild.roles.filter(role => settings.flairs.roles.includes(role.id)).map(role => `\`${role.name}\``).sort().join(', '));
+		return msg.say(msg.guild.roles
+			.filter(role => settings.flairs.roles.includes(role.id))
+			.map(role => `\`${role.name}\``)
+			.sort()
+			.join(', ')
+		);
 	}
 };

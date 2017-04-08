@@ -1,5 +1,6 @@
 const request = require('request-promise');
 const Canvas = require('canvas');
+const { client } = require('../bot.js');
 
 
 function rgb2hex(r, g, b) {
@@ -8,24 +9,23 @@ function rgb2hex(r, g, b) {
 	b = parseInt(b).toString(16);
 
 	let hex = [r, g, b];
-	hex = `#${hex.map(val => { if (val.length === 1) val = `0${val}`; return val; }).join('')}`;
+	hex = `#${hex.map(val => {
+		if (val.length === 1) val = `0${val}`; return val;
+	}).join('')}`;
 
 	return hex;
 }
 
 // http://stackoverflow.com/questions/2541481/get-average-color-of-image-via-javascript
 module.exports = async (url) => {
+	client.log.logFunc('averageRGB');
 	const blockSize = 5,
 		defaultRGB = { r: 0, g: 0, b: 0 };
 
 	let canvas = new Canvas(100, 100);
 	let ctx = canvas.getContext('2d');
 
-	let data, width, height,
-		i = -4,
-		length,
-		rgb = { r: 0, g: 0, b: 0 },
-		count = 0;
+	let data, width, height, i = -4, length, rgb = { r: 0, g: 0, b: 0 };
 
 	if (!ctx) {
 		return defaultRGB;
@@ -53,7 +53,6 @@ module.exports = async (url) => {
 	length = data.data.length;
 
 	while ((i += blockSize * 4) < length) {
-		++count;
 		rgb.r += data.data[i];
 		rgb.g += data.data[i + 1];
 		rgb.b += data.data[i + 2];

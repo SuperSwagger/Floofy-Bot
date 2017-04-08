@@ -14,10 +14,10 @@ class Database {
 
 	start() {
 		this.database.authenticate()
-			.then(() => logger.info('Connection has been established successfully.'))
+			.then(() => console.log('Connection has been established successfully.'))
 			.then(() => this.database.sync())
-			.then(() => logger.info('Syncing Database...'))
-			.catch(err => logger.error(`Unable to connect to the database: ${err}`));
+			.then(() => console.log('Syncing Database...'))
+			.catch(err => console.error(`Unable to connect to the database: ${err}`));
 	}
 }
 

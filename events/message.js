@@ -29,6 +29,7 @@ exports.run = async (bot, message) => { // eslint-disable-line
 	const words = await redis.db.getAsync(`filter${message.guild.id}`).then(JSON.parse);
 	const enabled = await redis.db.getAsync(`filterenabled${message.guild.id}`).then(JSON.parse);
 	if (enabled && words) {
+		bot.funcs.logEvent(bot, 'message - filter');
 		if (!bot.funcs.isStaff(member) && bot.funcs.hasFilteredWord(words, bot.funcs.filterWord(message.content))) {
 			await message.author.send(`Your message was deleted due to breaking the filter!\nContent: \`${message.content}\``);
 			return message.delete();
@@ -37,6 +38,7 @@ exports.run = async (bot, message) => { // eslint-disable-line
 	const slowmode = await redis.db.hgetallAsync(`slowmode${message.guild.id}`);
 	if (slowmode && JSON.parse(slowmode.enabled)) {
 		const slowuser = await redis.db.hgetallAsync(`slowuser${message.guild.id}${message.author.id}`) || { tokens: 0, lastUpdate: new Date().getTime() };
+		bot.funcs.logEvent(bot, 'message - slowmode');
 		if (new Date().getTime() - slowuser.lastUpdate > slowmode.cooldown * 1000) {
 			await redis.db.del(`slowuser${message.guild.id}${message.author.id}`);
 		} else if (slowuser.tokens === slowmode.tokens) {
@@ -72,6 +74,7 @@ exports.run = async (bot, message) => { // eslint-disable-line
 				const newLevel = await Experience.getLevel(message.author.id);
 
 				if (newLevel > oldLevel) {
+					bot.funcs.logEvent(bot, 'message - levelup');
 					Currency._changeBalance(message.author.id, 100 * newLevel);
 					const notifs = message.guild.settings.get('levelNotifs', false);
 					if (notifs) message.reply(`Congratulations, you have leveled up to Level ${newLevel}!`);
@@ -214,7 +217,7 @@ exports.run = async (bot, message) => { // eslint-disable-line
 	}	else if (cmd === 'coding') {
 		message.channel.send('<http://www.stilldrinking.org/programming-sucks>');
 	}	else if (cmd === 'luma') {
-		let items = ['https://gfycat.com/PeacefulRealEgg', 'http://oddshot.tv/shot/showdowngg-2016011753143824', 'http://oddshot.tv/shot/showdowngg-2016011613218276', 'http://i.imgur.com/NtohbyB.gifv', 'http://i.imgur.com/r6wTqQS.gif', 'http://m.imgur.com/6Uq556t?r', 'https://youtu.be/F3XN3m-6q7w', 'http://m.imgur.com/G1YljDl.gif', 'http://i.imgur.com/qdpOywW.gifv', 'https://www.youtube.com/watch?v=ArXIuKNBdW4', 'https://twitter.com/LettuceUdon/status/741881064130367488', 'http://i.imgur.com/Zqiy6u9.gif', 'https://images-2.discordapp.net/.eJwFwdsRhCAMAMBeKIAAGh62YQUcMtHxEQbi1831frtf9fZLLWoXaWMB2I5RuG96CPdMVRMzXTW3Y-jCN2SRXPa7PjIgJuOTsc5g9OiDj2ATIrppdtZ4DCbgDJ0-E52rbg-p3x_j6yI0.Pgjy7k_cFbM9aFiepZGuXfQ13Fw.png', 'https://twitter.com/DabuzSenpai/status/746102034793963524', 'https://oddshot.tv/shot/MVG_League/UzrqS3q_qS1P34GJkhfWT-Of', 'https://gfycat.com/RealYellowBuckeyebutterfly', 'https://i.gyazo.com/e0af536fb2a9796b930ea5155a337453.gif', 'http://i.imgur.com/Jcxt4Yd.gifv', 'http://i.imgur.com/UrEcikV.gifv', 'http://i.imgur.com/aWPl6hS.gifv', 'https://gfycat.com/FewHappyAmericanalligator', 'https://twitter.com/SmLysomali/status/807769817453248512', 'https://clips.twitch.tv/evenmatchupgaming/ConcernedRatTTours', 'https://gfycat.com/LimpPhonyGuillemot', 'https://clips.twitch.tv/tourneylocator/VivaciousGorillaOneHand', 'https://oddshot.tv/shot/Uzq1ckkC1clDPb0vmVV2KX3x', 'https://oddshot.tv/s/Lkf5ZV'];
+		let items = ['https://gfycat.com/PeacefulRealEgg', 'http://oddshot.tv/shot/showdowngg-2016011753143824', 'http://oddshot.tv/shot/showdowngg-2016011613218276', 'http://i.imgur.com/NtohbyB.gifv', 'http://i.imgur.com/r6wTqQS.gif', 'http://m.imgur.com/6Uq556t?r', 'https://youtu.be/F3XN3m-6q7w', 'http://m.imgur.com/G1YljDl.gif', 'http://i.imgur.com/qdpOywW.gifv', 'https://www.youtube.com/watch?v=ArXIuKNBdW4', 'https://twitter.com/LettuceUdon/status/741881064130367488', 'http://i.imgur.com/Zqiy6u9.gif', 'https://images-2.discordapp.net/.eJwFwdsRhCAMAMBeKIAAGh62YQUcMtHxEQbi1831frtf9fZLLWoXaWMB2I5RuG96CPdMVRMzXTW3Y-jCN2SRXPa7PjIgJuOTsc5g9OiDj2ATIrppdtZ4DCbgDJ0-E52rbg-p3x_j6yI0.Pgjy7k_cFbM9aFiepZGuXfQ13Fw.png', 'https://twitter.com/DabuzSenpai/status/746102034793963524', 'https://oddshot.tv/shot/MVG_League/UzrqS3q_qS1P34GJkhfWT-Of', 'https://gfycat.com/RealYellowBuckeyebutterfly', 'https://i.gyazo.com/e0af536fb2a9796b930ea5155a337453.gif', 'http://i.imgur.com/Jcxt4Yd.gifv', 'http://i.imgur.com/UrEcikV.gifv', 'http://i.imgur.com/aWPl6hS.gifv', 'https://gfycat.com/FewHappyAmericanalligator', 'https://twitter.com/SmLysomali/status/807769817453248512', 'https://clips.twitch.tv/evenmatchupgaming/ConcernedRatTTours', 'https://gfycat.com/LimpPhonyGuillemot', 'https://clips.twitch.tv/tourneylocator/VivaciousGorillaOneHand', 'https://oddshot.tv/shot/Uzq1ckkC1clDPb0vmVV2KX3x', 'https://oddshot.tv/s/Lkf5ZV', 'https://gfycat.com/HarmfulJointAsiaticgreaterfreshwaterclam'];
 		message.channel.send(`${items[Math.floor(Math.random() * items.length)]}`);
 	}	else if (cmd === 'yee') {
 		message.channel.sendFile('http://i.imgur.com/RNOVPGx.gelse if');
@@ -284,6 +287,7 @@ exports.run = async (bot, message) => { // eslint-disable-line
 		if (!message.guild) return null;
 		const customcommand = await redis.db.getAsync(`customcommand${message.guild.id}${cmd}`) || await redis.db.getAsync(`customcommand${message.guild.id}${cmd.toLowerCase()}`);
 		if (!customcommand) return null;
+		bot.funcs.logEvent(bot, 'message - customcommand');
 		if (customcommand.constructor === Array) {
 			let output = '';
 			let response = customcommand;

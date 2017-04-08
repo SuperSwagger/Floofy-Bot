@@ -4,7 +4,6 @@ const Canvas = require('canvas');
 const { Command } = require('discord.js-commando');
 const path = require('path');
 const request = require('request-promise');
-const Promise = require('bluebird');
 const fs = Promise.promisifyAll(require('fs'));
 
 const config = require('../../settings');

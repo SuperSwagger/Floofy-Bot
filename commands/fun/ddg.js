@@ -1,5 +1,5 @@
 const { Command } = require('discord.js-commando');
-const request = require('request-promise-native');
+const request = require('request-promise');
 
 module.exports = class DDGSearchCommand extends Command {
 	constructor(client) {

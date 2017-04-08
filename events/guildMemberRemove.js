@@ -5,7 +5,7 @@ exports.run = async (bot, member) => {
   // leaves/kicks
 	const settings = await guildSettings.findOne({ where: { guildID: member.guild.id } });
 	if (!settings) return;
-	bot.funcs.logEvent(bot, 'guildMemberRemove');
+	// bot.funcs.logEvent(bot, 'guildMemberRemove');
 	const logs = settings.logs;
 	const rolestate = settings.rolestate;
 	// const mentions = settings.mentions;
@@ -54,5 +54,4 @@ exports.run = async (bot, member) => {
 		await member.guild.channels.get(channel).sendEmbed(embed);
 	}
 	*/
-	member = null;
 };

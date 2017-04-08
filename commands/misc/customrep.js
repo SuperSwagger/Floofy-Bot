@@ -3,7 +3,7 @@ const GuildSettings = require('../../dataProviders/postgreSQL/models/GuildSettin
 
 const fs = require('fs');
 const path = require('path');
-const request = require('request-promise-native');
+const request = require('request-promise');
 const superagent = require('superagent');
 const { token, baseURL } = require('../../settings').lolisafe;
 

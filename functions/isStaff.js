@@ -1,3 +1,5 @@
+const { client } = require('../bot.js');
+
 module.exports = (member) => {
 	const permissions = member.permissions.serialize();
 	return (

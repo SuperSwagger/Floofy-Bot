@@ -65,7 +65,7 @@ module.exports = class ViewConfigCommand extends Command {
 			out += '\n';
 		}
 	// filter
-		if (Object.keys(settings.filter).length > 0) {
+		if (Object.keys(settings.filter).length > 0 && settings.filter.words) {
 			out += stripIndents`
 			__Filtered Words__:
 			${settings.filter.words.join(', ')}

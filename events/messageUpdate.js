@@ -6,7 +6,7 @@ exports.run = async (bot, oldmsg, newmsg) => {
 	if (!newmsg.guild || !newmsg.guild.available || newmsg.bot) return;
 	const settings = await guildSettings.findOne({ where: { guildID: newmsg.guild.id } });
 	if (!settings) return;
-	bot.funcs.logEvent(bot, 'messageUpdate');
+	// bot.funcs.logEvent(bot, 'messageUpdate');
 	const logs = settings.logs;
 
 	const words = await redis.db.getAsync(`filter${newmsg.guild.id}`).then(JSON.parse);

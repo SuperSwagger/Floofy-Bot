@@ -1,5 +1,5 @@
 const { Command } = require('discord.js-commando');
-const jsonfile = require('jsonfile');
+const fs = require('fs');
 const path = require('path');
 const { stripIndents } = require('common-tags');
 
@@ -268,7 +268,7 @@ module.exports = class PMDataCommand extends Command {
 
 
 		if (type) {
-			file = jsonfile.readFileSync(path.join(__dirname, '..', '..', 'assets', 'smash', 'pm', char, 'moveOverview.json'));
+			file = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'assets', 'smash', 'pm', char, 'moveOverview.json')));
 
 			let data = {};
 
@@ -291,7 +291,7 @@ module.exports = class PMDataCommand extends Command {
 			}
 
 			if (detail !== -1) {
-				file = jsonfile.readFileSync(path.join(__dirname, '..', '..', 'assets', 'smash', 'pm', char, 'moveData.json'));
+				file = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'assets', 'smash', 'pm', char, 'moveData.json')));
 				data = file[type][move].move;
 
 				for (let frame in data) {
@@ -328,12 +328,12 @@ module.exports = class PMDataCommand extends Command {
 				}
 			}
 
-			file = jsonfile.readFileSync(path.join(__dirname, '..', '..', 'assets', 'smash', 'pm', char, 'moveOverview.json'));
+			file = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'assets', 'smash', 'pm', char, 'moveOverview.json')));
 			message.channel.sendEmbed(out).then(() => {
 				if (file[type][move].gfycat) message.channel.sendMessage(file[type][move].gfycat);
 			});
 		}	else if (char !== -1) {
-			file = jsonfile.readFileSync(path.join(__dirname, '..', '..', 'assets', 'smash', 'pm', 'Attributes.json'));
+			file = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'assets', 'smash', 'pm', 'Attributes.json')));
 			out.setTitle(`Attributes of ${char}`);
 			out.setThumbnail(thumbnail);
 			out.setColor(color);
@@ -394,6 +394,6 @@ function round(num, places) {
 	const multiplier = Math.pow(10, places);
 	return Math.round(num * multiplier) / multiplier;
 }
-String.prototype.capitalize = function() {
+String.prototype.capitalize = function derp() {
 	return this.replace(/\w\S*/g, (txt) => { return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase(); });
 };

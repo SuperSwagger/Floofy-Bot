@@ -4,7 +4,7 @@ exports.run = async (bot, member) => {
   // joined
 	const settings = await guildSettings.findOne({ where: { guildID: member.guild.id } });
 	if (!settings) return;
-	bot.funcs.logEvent(bot, 'guildMemberAdd');
+	// bot.funcs.logEvent(bot, 'guildMemberAdd');
 	const welcome = settings.welcome;
 	const logs = settings.logs;
 	const rolestate = settings.rolestate;

@@ -38,8 +38,8 @@ module.exports = class UserInfoCommand extends Command {
 			offline: '212790005943369728'
 		};
 
-		const user = args.member.hasOwnProperty('id') ? args.member.user : msg.author;
-		const member = args.member.hasOwnProperty('id') ? args.member : msg.member;
+		const user = args.member.user || msg.author;
+		const member = args.member || msg.member;
 
 		const embed = new this.client.methods.Embed();
 		embed.setAuthor(`${user.username}#${user.discriminator} (${user.id})`, user.avatarURL);

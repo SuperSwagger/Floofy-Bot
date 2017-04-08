@@ -9,7 +9,7 @@ exports.run = async (bot, messageReaction, user) => {
 	const message = messageReaction.message;
 	const starboard = message.guild.channels.find('name', 'starboard');
 	if (messageReaction.emoji.name === '⭐' && starboard) {
-		bot.funcs.logEvent(bot, 'messageReactionAdd');
+		// bot.funcs.logEvent(bot, 'messageReactionAdd');
 		if (message.author.id === user.id) {
 			messageReaction.remove(user.id);
 			return message.channel.send(`${user}, you cannot star your own messages!`); // eslint-disable-line consistent-return

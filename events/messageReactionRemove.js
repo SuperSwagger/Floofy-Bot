@@ -8,7 +8,7 @@ exports.run = async (bot, messageReaction, user) => {
 	if (messageReaction.emoji.name === '⭐' && starboard) {
 		const settings = await starBoard.findOne({ where: { guildID: message.guild.id } });
 		if (!settings) return;
-		bot.funcs.logEvent(bot, 'messageReactionRemove');
+		// bot.funcs.logEvent(bot, 'messageReactionRemove');
 		let starred = settings.starred;
 
 		if (!starred.hasOwnProperty(message.id)) return;

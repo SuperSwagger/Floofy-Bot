@@ -5,9 +5,9 @@ const types = ['bots', 'users'];
 module.exports = class AddJoinFlairCommand extends Command {
 	constructor(client) {
 		super(client, {
-			name: 'addflair',
+			name: 'joinflair',
 			group: 'config',
-			memberName: 'addflair',
+			memberName: 'joinflair',
 			description: 'Adds a role to the list of roles automatically assigned on join.',
 			guildOnly: true,
 			examples: [

@@ -6,7 +6,7 @@ exports.run = async (bot, message) => {
 	if (!message || !message.guild || message.type !== 'DEFAULT' || message.embeds.length > 0 || !message.channel) return;
 	const settings = await guildSettings.findOne({ where: { guildID: message.guild.id } });
 	if (!settings) return;
-	bot.funcs.logEvent(bot, 'messageDelete');
+	// bot.funcs.logEvent(bot, 'messageDelete');
 	const words = await redis.db.getAsync(`filter${message.guild.id}`).then(JSON.parse);
 	const enabled = await redis.db.getAsync(`filterenabled${message.guild.id}`).then(JSON.parse);
 	const logs = settings.logs;

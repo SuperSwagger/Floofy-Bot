@@ -19,7 +19,10 @@ function randSlotMachine() {
 	}
 }
 
+const { client } = require('../bot.js');
+
 module.exports = () => {
+	client.log.logFunc('randSlotMachine');
 	randSlotMachine();
 	return slotmachine;
 };

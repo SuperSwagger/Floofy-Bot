@@ -4,7 +4,7 @@ exports.run = async (bot, oldMember, newMember) => {
   // nicknames, roles
 	const settings = await guildSettings.findOne({ where: { guildID: newMember.guild.id } });
 	if (!settings) return;
-	bot.funcs.logEvent(bot, 'guildMemberUpdate');
+	// bot.funcs.logEvent(bot, 'guildMemberUpdate');
 	const logs = settings.logs;
 	if (logs && logs.enabled && logs.channel && newMember.guild.channels.has(logs.channel)) {
 		const embed = new bot.methods.Embed()
@@ -24,6 +24,4 @@ exports.run = async (bot, oldMember, newMember) => {
 			await newMember.guild.channels.get(logs.channel).sendEmbed(embed);
 		}
 	}
-	oldMember = null;
-	newMember = null;
 };

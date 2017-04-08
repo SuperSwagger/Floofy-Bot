@@ -35,7 +35,7 @@ module.exports = class EmojiInfoCommand extends Command {
 		ctx.stroke();
 		ctx.fill();
 
-	  // Hour marks
+		// Hour marks
 		ctx.lineWidth = 8;
 		ctx.strokeStyle = '#000000';
 		for (i = 0; i < 12; i++) {
@@ -47,7 +47,7 @@ module.exports = class EmojiInfoCommand extends Command {
 			ctx.stroke();
 		}
 
-	  // Minute marks
+		// Minute marks
 		ctx.lineWidth = 5;
 		ctx.strokeStyle = '#000000';
 		for (i = 0; i < 60; i++) {
@@ -67,7 +67,7 @@ module.exports = class EmojiInfoCommand extends Command {
 
 		ctx.fillStyle = 'black';
 
-	  // Write hours
+		// Write hours
 		x = getX(hr * (Math.PI / 6) + (Math.PI / 360) * min + (Math.PI / 21600) * sec);
 		y = getY(hr * (Math.PI / 6) + (Math.PI / 360) * min + (Math.PI / 21600) * sec);
 		ctx.lineWidth = 14;
@@ -76,7 +76,7 @@ module.exports = class EmojiInfoCommand extends Command {
 		ctx.lineTo(x * 80, y * 80);
 		ctx.stroke();
 
-	  // Write minutes
+		// Write minutes
 		x = getX((Math.PI / 30) * min + (Math.PI / 1800) * sec);
 		y = getY((Math.PI / 30) * min + (Math.PI / 1800) * sec);
 
@@ -86,7 +86,7 @@ module.exports = class EmojiInfoCommand extends Command {
 		ctx.lineTo(x * 112, y * 112);
 		ctx.stroke();
 
-	  // Write seconds
+		// Write seconds
 		x = getX(sec * Math.PI / 30);
 		y = getY(sec * Math.PI / 30);
 		ctx.strokeStyle = '#D40000';

@@ -4,7 +4,7 @@ exports.run = async (bot, server, user) => {
   // unbans
 	const settings = await guildSettings.findOne({ where: { guildID: server.id } });
 	if (!settings) return;
-	bot.funcs.logEvent(bot, 'guildBanRemove');
+	// bot.funcs.logEvent(bot, 'guildBanRemove');
 	const logs = settings.logs;
 	if (logs && logs.enabled && logs.channel && (logs.fields ? logs.fields.bans !== false : !logs.fields) && server.channels.has(logs.channel)) {
 		// might change colour to lime green

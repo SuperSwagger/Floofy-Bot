@@ -1,7 +1,7 @@
 const { stripIndents } = require('common-tags');
 
 exports.run = (bot, server) => {
-	bot.funcs.logEvent(bot, 'guildCreate');
+	// bot.funcs.logEvent(bot, 'guildCreate');
 	const blacklist = bot.provider.get('global', 'userBlacklist', []);
 	if (blacklist.includes(server.ownerID)) return server.leave();
 	bot.fetchUser(server.ownerID).then(user => {

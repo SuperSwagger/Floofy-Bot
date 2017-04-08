@@ -1,6 +1,6 @@
 const { Command } = require('discord.js-commando');
 // const CleverBot = require('cleverbot-node');
-const Cleverbot = require('cleverbot.io');
+// const Cleverbot = require('cleverbot.io');
 const config = require('../../settings.json');
 const bot = new Cleverbot(config.user, config.key);
 

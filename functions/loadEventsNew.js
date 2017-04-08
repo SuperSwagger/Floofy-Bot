@@ -1,0 +1,19 @@
+const path = require('path');
+const fs = require('fs');
+
+let events = require('discord.js/src/util/Constants.js').Events;
+events = Object.keys(events).map(key => events[key]);
+const storage = {};
+
+module.exports = (client) => {
+	const dir = path.join(__dirname, '..', 'events');
+	const files = fs.readdirSync(dir).filter(file => events.includes(file.slice(0, -3)));
+	let count = 0;
+	for (const file of files) {
+		const name = file.slice(0, -3);
+		storage[name] = require(`${dir}/${name}`);
+		client.on(name, (...args) => storage[name].run(client, ...args));
+		count++;
+	}
+	client.funcs.log(`Loaded ${count} events.`);
+};

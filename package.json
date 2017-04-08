@@ -20,10 +20,11 @@
   ],
   "homepage": "https://github.com/Lewdcario/Floofy-Bot#readme",
   "dependencies": {
+	"superagent": "^3.5.2",
     "Sherlock": "neilgupta/Sherlock",
     "bluebird": "^3.4.7",
     "canvas": "automattic/node-canvas",
-    "discord.js": "hydrabolt/discord.js#indev-prism",
+    "discord.js": "hydrabolt/discord.js",
     "discord.js-commando": "gawdl3y/discord.js-commando",
     "erlpack": "hammerandchisel/erlpack#master",
     "moment": "^2.17.1",
@@ -41,7 +42,13 @@
     "simple-youtube-api": "^2.1.0",
     "sqlite": "^2.2.4",
     "winston": "^2.3.0",
-    "ytdl-core": "^0.7.21"
+    "ytdl-core": "^0.7.21",
+	"mathjs": "^3.11.4",
+	"htm-to-json": "^0.1.4",
+	"wolfram-alpha": "^0.5.0",
+	"usage": "^0.7.1",
+	"js-beautify": "^1.6.12",
+	"heapdump": "^0.3.7"
   },
   "devDependencies": {
     "eslint": "^3.12.2"

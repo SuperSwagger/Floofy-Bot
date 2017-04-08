@@ -2,7 +2,7 @@ const { Command } = require('discord.js-commando');
 const fs = require('fs');
 const path = require('path');
 const superagent = require('superagent');
-const request = require('request-promise-native');
+const request = require('request-promise');
 const { token, baseURL } = require('../../settings').lolisafe;
 
 

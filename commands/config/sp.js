@@ -52,8 +52,7 @@ module.exports = class ProfileCommand extends Command {
 	async run(message, args) {
 		let clower = chars.map(char => char.toLowerCase());
 		let cgames = games.map(game => game.toLowerCase());
-		let profile = await UserProfile.findOne({ where: { userID: message.author.id } });
-		if (!profile) profile = await UserProfile.create({ userID: message.author.id });
+		const profile = await UserProfile.findOne({ where: { userID: message.author.id } }) || await UserProfile.create({ userID: message.author.id });
 		let smashProfile = profile.smashProfile;
 
 		if (delOptions.includes(args.query)) {
