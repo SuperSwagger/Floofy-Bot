@@ -32,7 +32,7 @@ module.exports = class KickUserCommand extends Command {
 
 	async run(msg, args) {
 		const member = args.member;
-		if (member.user.id === this.client.user.id) return msg.reply('Please don\'t softban me :(');
+		if (member.user.id === this.client.user.id) return msg.reply('Please don\'t kick me :(');
 		const botMember = await msg.guild.fetchMember(this.client.user);
 		if (!botMember.hasPermission('KICK_MEMBERS')) return msg.reply('I do not have the `kick members` permission.');
 		if (!args.member.kickable) return msg.reply('I am unable to kick this user, please ensure my highest role is above the target user\'s highest role!');
