@@ -35,12 +35,12 @@ module.exports = class KickUserCommand extends Command {
 		if (member.user.id === this.client.user.id) return msg.reply('Please don\'t kick me :(');
 		const botMember = await msg.guild.fetchMember(this.client.user);
 		if (!botMember.hasPermission('KICK_MEMBERS')) return msg.reply('I do not have the `kick members` permission.');
-		if (!args.member.kickable) return msg.reply('I am unable to kick this user, please ensure my highest role is above the target user\'s highest role!');
+		if (!member.kickable) return msg.reply('I am unable to kick this user, please ensure my highest role is above the target user\'s highest role!');
 
 		const message = await msg.channel.send('Kicking user...');
 
 		await member.kick();
-		return message.edit(`${args.member.user.username}#${args.member.user.discriminator} was kicked.`);
+		return message.edit(`${member.user.username}#${member.user.discriminator} was kicked.`);
 	}
 	// go to mod logs
 };
