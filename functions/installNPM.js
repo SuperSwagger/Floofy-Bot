@@ -1,13 +1,12 @@
-const exec = require('child_process').exec;
-const { client } = require('../bot.js');
+const { exec } = require('child_process');
 
 module.exports = module => new Promise((resolve, reject) => {
-	client.log.logFunc('installNPM');
-	exec(`npm i ${module}`, (e, stdout, stderr) => {
-		if (e) {
+	exec(`npm i ${module}`, (error, stdout, stderr) => {
+		if (error) {
 			console.log('=====NEW DEPENDANCY INSTALL FAILED HORRIBLY=====');
-			reject(e);
-		} else {
+			reject(error);
+		}
+		else {
 			console.log('=====INSTALLED NEW DEPENDANCY=====');
 			console.log(stdout);
 			console.error(stderr);

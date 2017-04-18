@@ -15,8 +15,8 @@ module.exports = class AddJoinFlairCommand extends Command {
 			],
 			args: [
 				{
-					key: 'roles',
-					prompt: 'What rolewould you like to add to the list of roles automatically assigned on join?\n',
+					key: 'role',
+					prompt: 'What role would you like to add to the list of roles automatically assigned on join?\n',
 					type: 'role'
 				},
 				{
@@ -34,9 +34,11 @@ module.exports = class AddJoinFlairCommand extends Command {
 
 	async run(msg, args) {
 		const settings = await guildSettings.findOne({ where: { guildID: msg.guild.id } }) || await guildSettings.create({ guildID: msg.guild.id });
+		console.log(settings);
 		const flairs = settings.joinflairs;
+		if (!flairs[args.type]) flairs[args.type] = {};
 		if (!flairs[args.type].roles) flairs[args.type].roles = [];
-		if (args.role.id in flairs[args.type].roles) return msg.reply('This role is already on the list of roles!');
+		if (flairs[args.type].roles.includes(args.role.id)) return msg.reply('This role is already on the list of roles!');
 		flairs[args.type].roles.push(args.role.id);
 		settings.flairs = flairs;
 		await settings.save();

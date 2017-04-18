@@ -53,7 +53,8 @@ module.exports = class AsyncEvalCommand extends Command {
 				\`\`\`js
 				${evaled}
 				\`\`\`*Time taken: ${new Date().getTime() - time}\ms*`);
-		} catch (err) {
+		}
+		catch (err) {
 			msg.say(stripIndents`${msg.content}
 				\`ERROR\`
 				\`\`\`js

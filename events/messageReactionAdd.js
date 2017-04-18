@@ -66,7 +66,8 @@ exports.run = async (bot, messageReaction, user) => {
 			settings.starred = starred;
 
 			await settings.save();
-		} else {
+		}
+		else {
 			const starCount = 1;
 			let attachmentImage;
 			const extensions = new Set(['.png', '.jpg', '.jpeg', '.gif', '.webp']);
@@ -77,7 +78,8 @@ exports.run = async (bot, messageReaction, user) => {
 					const url = new URL(attachment.url);
 					const ext = path.extname(url.pathname);
 					return extensions.has(ext);
-				} catch (err) {
+				}
+				catch (err) {
 					if (err.message !== 'Invalid URL') winston.error(err);
 					return false;
 				}
@@ -90,7 +92,8 @@ exports.run = async (bot, messageReaction, user) => {
 						const url = new URL(linkMatch[0]);
 						const ext = path.extname(url.pathname);
 						if (extensions.has(ext)) attachmentImage = linkMatch[0]; // eslint-disable-line max-depth
-					} catch (err) {
+					}
+					catch (err) {
 						if (err.message === 'Invalid URL') winston.info('No valid image link.'); // eslint-disable-line max-depth
 						else winston.error(err);
 					}

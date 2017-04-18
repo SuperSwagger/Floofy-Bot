@@ -257,7 +257,8 @@ module.exports = class PMDataCommand extends Command {
 			thumbnail = chars[char].thumbnail;
 			color = parseInt(`0x${chars[char].color}`, 16);
 			char = this.client.funcs.toTitleCase(char);
-		}		else {
+		}
+		else {
 			return message.channel.sendMessage('Please provide a character');
 		}
 
@@ -332,7 +333,8 @@ module.exports = class PMDataCommand extends Command {
 			message.channel.sendEmbed(out).then(() => {
 				if (file[type][move].gfycat) message.channel.sendMessage(file[type][move].gfycat);
 			});
-		}	else if (char !== -1) {
+		}
+		else if (char !== -1) {
 			file = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'assets', 'smash', 'pm', 'Attributes.json')));
 			out.setTitle(`Attributes of ${char}`);
 			out.setThumbnail(thumbnail);
@@ -348,7 +350,8 @@ module.exports = class PMDataCommand extends Command {
 			}
 
 			message.channel.sendEmbed(out);
-		} else {
+		}
+		else {
 			return message.channel.sendMessage("Looks like this character doesn't exist!");
 		}
 	}
@@ -369,7 +372,8 @@ function getAliasMatch(str, obj) {
 	for (let name in obj) {
 		if (str.includes(name)) {
 			return name;
-		} else if (obj[name] instanceof Array) {
+		}
+		else if (obj[name] instanceof Array) {
 			let length = obj[name].length;
 			while (length--) {
 				if (str.includes(obj[name][length])) {
@@ -377,7 +381,8 @@ function getAliasMatch(str, obj) {
 					return match;
 				}
 			}
-		}	else {
+		}
+		else {
 			let length = obj[name].alias.length;
 			while (length--) {
 				if (str.includes(obj[name].alias[length])) {

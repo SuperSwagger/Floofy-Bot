@@ -2,7 +2,7 @@ const path = require('path');
 const fs = require('fs');
 
 let events = require('discord.js/src/util/Constants.js').Events;
-events = Object.keys(events).map(key => events[key]);
+events = Object.values(events);
 const storage = {};
 
 module.exports = (client) => {

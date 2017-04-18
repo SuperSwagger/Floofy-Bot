@@ -25,8 +25,11 @@ exports.run = async (bot, member) => {
 		if (welcome.pm && welcome.pm.enabled === true && welcome.pm.message && member.guild.channels.has(logs.channel)) await member.sendMessage(welcome.pm.message.replace(/\[user\]/g, member));
 
 		if (welcome.public && welcome.public.enabled !== false && welcome.public.message) {
-			if (welcome.public.channel && member.guild.channels.get(welcome.public.channel)) member.guild.channels.get(welcome.public.channel).sendMessage(welcome.public.message.replace(/USER/g, member));
-			else await member.guild.owner.sendMessage(`You seem to have welcome messages enabled, but not configured properly. A new member joined in\`${member.guild.name}\`but a valid channel is not set! Please set a valid channel for welcome messages in\`${member.guild.name}\`!`);
+			if (welcome.public.channel && member.guild.channels.get(welcome.public.channel)) {
+				if (member.guild.id === '89069012058656768') member.guild.channels.get(welcome.public.channel).sendFile('http://i.imgur.com/3I5EFct.png').then(msg => msg.channel.send(welcome.public.message.replace(/USER/g, member)));
+				else member.guild.channels.get(welcome.public.channel).sendMessage(welcome.public.message.replace(/USER/g, member));
+			}
+			else { await member.guild.owner.sendMessage(`You seem to have welcome messages enabled, but not configured properly. A new member joined in\`${member.guild.name}\`but a valid channel is not set! Please set a valid channel for welcome messages in\`${member.guild.name}\`!`); }
 		}
 	}
 	// join flairs
@@ -40,7 +43,8 @@ exports.run = async (bot, member) => {
 		const roles = rolestate.users[member.id].map(roleid => { // eslint-disable-line
 			if (member.guild.roles.has(roleid)) {
 				if (member.guild.roles.get(roleid).name !== '@everyone') return roleid;
-			}	else { numDeletedRoles++; }
+			}
+			else { numDeletedRoles++; }
 		});
 		member.addRoles(roles).then(async () => {
 			if (logs && logs.channel && logs.enabled && member.guild.channels.has(logs.channel)) {
@@ -61,7 +65,8 @@ exports.run = async (bot, member) => {
 				const role = member.guild.roles.get(roleid);
 				if (role && member.guild.roles.has(role.id)) {
 					if (role.name !== '@everyone') return role.name;
-				} else { return 'DELETED ROLE'; }
+				}
+				else { return 'DELETED ROLE'; }
 			});
 			await member.guild.owner.sendMessage(`\uD83D\uDEAB I do not have permissions to reinstate the roles for ${member} in the server \`${member.guild.name}\`. Here are the roles I remembered for this user:\n\`${roleNames.join(', ').slice(2)}\`.`);
 			delete rolestate.users[member.id];

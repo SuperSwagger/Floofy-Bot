@@ -25,7 +25,7 @@ const charAliases = {
 	kirby: ['pink puffball'],
 	'toon link': ['tink'],
 	link: ['l@nk', 'lank'],
-	'Little Mac': ['lm'],
+	'little mac': ['lm'],
 	lucario: ['luc', '448'],
 	lucina: [],
 	lucas: [],
@@ -109,7 +109,8 @@ module.exports = class KHCommand extends Command {
 					if (fieldValue.length > 1024) {
 						embed.addField(fieldName, `${fieldValue.substring(0, 1023)}-`, true);
 						embed.addField(`${fieldName}(continued)`, `-${fieldValue.substring(1024)}`, true);
-					}	 else {
+					}
+					else {
 						embed.addField(fieldName, fieldValue, true);
 					}
 					fieldName = translateAttribute(attribute.smashAttributeTypeId);
@@ -120,7 +121,8 @@ module.exports = class KHCommand extends Command {
 			embed.addField(fieldName, fieldValue, true);
 			embed.setDescription('Move Info', out);
 			return msg.channel.sendEmbed(embed);
-		} else {
+		}
+		else {
 			const moveAttributes = await request.get(`${url + charAttributes.body.id}/moves`).catch(console.error);
 			let moveCount = 0;
 			for (let move in moveAttributes.body) {
@@ -145,14 +147,16 @@ module.exports = class KHCommand extends Command {
 					for (let i = 0; i < specials.length; i++) {
 						if ((field1.join('\n').length + specials[i].length) < 900) {
 							field1.push(specials[i]);
-						} else {
+						}
+						else {
 							field2.push(specials[i]);
 						}
 					}
 
 					embed.addField('Whoops!', `It looks like you're trying to view specials or grabs - here are the special move names for ${char}: \n${field1.join('\n')}`, true);
 					embed.addField('(Continued...)', field2.join('\n'), true);
-				} else {
+				}
+				else {
 					embed.addField('Whoops!', `It looks like you're trying to view specials or grabs - here are the special move names for ${char}: \n${specials.join('\n')}`, true);
 				}
 			}
@@ -169,14 +173,16 @@ function camelToNorm(str) {
 }
 
 function startsWithAny(str, arr) {
-	for (let query of arr) {
+	for (const query of arr) {
 		if (str.startsWith(query)) return true;
 	}
 	return false;
 }
 function getAliasMatch(str, obj) {
-	for (let name in obj) {
-		if (str.includes(name)) { return { match: name, alias: name }; } else {
+	if (str in obj) return { match: str, alias: str };
+	for (const name in obj) {
+		if (str.includes(name)) { return { match: name, alias: name }; }
+		else {
 			let length = obj[name].length;
 			while (length--) {
 				if (str.includes(obj[name][length])) {

@@ -58,15 +58,23 @@ client.dispatcher.addInhibitor(msg => {
 	return `User ${msg.author.username}#${msg.author.discriminator} (${msg.author.id}) has been blacklisted.`;
 });
 
+/*
+client.dispatcher.addInhibitor(async msg => {
+	const mute = await redis.db.getAsync(`mute${msg.guild.id}`).then(JSON.parse);
+	if (mute && mute.includes(msg.author.id)) return 'Command blocked due to being muted.';
+	return false;
+});
+*/
+
 client
 	.on('error', console.error)
 	.on('warn', console.warn)
 	.on('disconnect', (err) => {
-		client.log.hook({ title: 'Disconnected', color: client.log.colours.warn });
+		client.log.hook({ title: `Disconnected with error code: ${err.code}`, color: client.log.colours.warn });
 		client.log.error(err);
 		if (err.code === 1000) process.exit();
 	})
-	.on('reconnect', () => { client.log.warn('Reconnecting...'); })
+	.on('reconnect', () => client.log.warn('Reconnecting...'))
 	.once('ready', async () => {
 		client.log = new Log(client);
 		client.log.hook({ title: 'Logged in', color: client.log.colours.info });

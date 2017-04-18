@@ -1,7 +1,7 @@
 const guildSettings = require('../dataProviders/postgreSQL/models/GuildSettings');
 const starBoard = require('../dataProviders/postgreSQL/models/StarBoard');
 
-exports.run = async (bot, messageReaction, user) => {
+exports.run = async (bot, messageReaction, user) => { // eslint-disable-line complexity
 	const message = messageReaction.message;
 	const starboard = message.guild.channels.find('name', 'starboard');
 
@@ -20,7 +20,8 @@ exports.run = async (bot, messageReaction, user) => {
 		if (starred[message.id].count === 0) {
 			delete starred[message.id];
 			await starredMessage.delete().catch(() => null);
-		} else {
+		}
+		else {
 			const starredMessageContent = starred[message.id].starredMessageContent;
 			const starredMessageAttachmentImage = starred[message.id].starredMessageImage;
 			const starredMessageDate = starred[message.id].starredMessageDate;
@@ -73,9 +74,10 @@ exports.run = async (bot, messageReaction, user) => {
 	if (!settings || !settings.reactions || !settings.reactions.enabled || message.channel.id !== settings.reactions.channel) return;
 
 	const channel = bot.channels.get(settings.reactions.channel);
-	const msgs = await channel.fetchPinnedMessages().catch(err => console.error(err)) || channel.messages;
-	const pinned = msgs.first().id;
-	const emoji = messageReaction.emoji.hasOwnProperty('guild') ? messageReaction.emoji.id : messageReaction.emoji.name;
+	const msgs = await channel.fetchPinnedMessages().catch(() => null) || channel.messages;
+	const pinned = msgs.first() ? msgs.first().id : null;
+	if (!pinned) return;
+	const emoji = messageReaction.emoji.id || messageReaction.emoji.name;
 
 	if (message.id !== bot.channels.get(settings.reactions.channel).messages.first().id && messageReaction.message.id !== pinned) return;
 	if (!settings.reactions.roles[settings.reactions.emojis.indexOf(emoji)]) return messageReaction.message.channel.sendMessage('There is no role assigned to this reaction!'); // eslint-disable-line consistent-return
@@ -87,7 +89,4 @@ exports.run = async (bot, messageReaction, user) => {
 	await member.removeRole(settings.reactions.roles[settings.reactions.emojis.indexOf(emoji)]).catch(() => null);
   // might add perms check/feedback to config
 	await messageReaction.message.channel.sendMessage(`I have successfully added ${role.name} to ${user.username} via reaction!`).then(msg => msg.delete(10000).catch(() => null)); // eslint-disable-line consistent-return
-
-	messageReaction = null;
-	user = null;
 };

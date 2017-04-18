@@ -15,7 +15,7 @@ module.exports = class ViewConfigCommand extends Command {
 	}
 
 	hasPermission(msg) {
-		return msg.member.hasPermission('MANAGE_GUILD');
+		return msg.member.hasPermission('MANAGE_GUILD') || msg.author.id === this.client.options.owner;
 	}
 
 	async run(msg) {
@@ -56,7 +56,7 @@ module.exports = class ViewConfigCommand extends Command {
 		if (Object.keys(settings.logs).length > 0) {
 			out += stripIndents`
 			__Log Settings__:
-			Enabled: ${settings.logs.enabled}
+			Enabled: ${settings.logs.enabled ? 'enabled' : 'disabled'}
 			Customized Fields:
 			`;
 			for (let field in settings.logs.fields) {
@@ -68,6 +68,7 @@ module.exports = class ViewConfigCommand extends Command {
 		if (Object.keys(settings.filter).length > 0 && settings.filter.words) {
 			out += stripIndents`
 			__Filtered Words__:
+			Enabled: ${settings.filter.enabled ? 'enabled' : 'disabled'}
 			${settings.filter.words.join(', ')}
 			`;
 			out += '\n';

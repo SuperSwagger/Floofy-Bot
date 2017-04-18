@@ -1,8 +1,7 @@
 const permFlags = require('discord.js/src/util/Permissions.js').FLAGS;
-const { client } = require('../bot.js');
+// const permFlags = require('discord.js/src/util/Constants.js').PermissionFlags;
 
 module.exports = (requiredPerms) => {
-	client.log.logFunc('botPermissions');
 	const genObject = {};
 
 	for (const key in permFlags) {
