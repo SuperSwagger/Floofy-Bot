@@ -29,7 +29,6 @@ exports.run = async (bot, message) => { // eslint-disable-line
 	const words = await redis.db.getAsync(`filter${message.guild.id}`).then(JSON.parse);
 	const enabled = await redis.db.getAsync(`filterenabled${message.guild.id}`).then(JSON.parse);
 	if (enabled && words) {
-		bot.funcs.logEvent(bot, 'message - filter');
 		if (!bot.funcs.isStaff(member) && bot.funcs.hasFilteredWord(words, bot.funcs.filterWord(message.content))) {
 			await message.author.send(`Your message was deleted due to breaking the filter!\nContent: \`${message.content}\``);
 			return message.delete();
@@ -75,7 +74,6 @@ exports.run = async (bot, message) => { // eslint-disable-line
 				const newLevel = await Experience.getLevel(message.author.id);
 
 				if (newLevel > oldLevel) {
-					bot.funcs.logEvent(bot, 'message - levelup');
 					Currency._changeBalance(message.author.id, 100 * newLevel);
 					const notifs = message.guild.settings.get('levelNotifs', false);
 					if (notifs) message.reply(`Congratulations, you have leveled up to Level ${newLevel}!`);
@@ -345,7 +343,6 @@ exports.run = async (bot, message) => { // eslint-disable-line
 		if (!message.guild) return null;
 		const customcommand = await redis.db.getAsync(`customcommand${message.guild.id}${cmd}`) || await redis.db.getAsync(`customcommand${message.guild.id}${cmd.toLowerCase()}`);
 		if (!customcommand) return null;
-		bot.funcs.logEvent(bot, 'message - customcommand');
 		if (customcommand.constructor === Array) {
 			let output = '';
 			let response = customcommand;
