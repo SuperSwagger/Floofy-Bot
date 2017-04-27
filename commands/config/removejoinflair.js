@@ -5,10 +5,10 @@ const types = ['bots', 'users'];
 module.exports = class AddJoinFlairCommand extends Command {
 	constructor(client) {
 		super(client, {
-			name: 'addjoinflair',
+			name: 'removejoinflair',
 			group: 'config',
-			memberName: 'addjoinflair',
-			description: 'Adds a role to the list of roles automatically assigned on join.',
+			memberName: 'removejoinflair',
+			description: 'Removes a role from the list of roles automatically assigned on join.',
 			guildOnly: true,
 			examples: [
 				'joinflair frens'
@@ -16,12 +16,12 @@ module.exports = class AddJoinFlairCommand extends Command {
 			args: [
 				{
 					key: 'role',
-					prompt: 'What role would you like to add to the list of roles automatically assigned on join?\n',
+					prompt: 'What role would you like to remove from the list of roles automatically assigned on join?\n',
 					type: 'role'
 				},
 				{
 					key: 'type',
-					prompt: `What member group would you like this role to be automatically assigned to? (\`${types.join(', ')}\`)\n`,
+					prompt: `What member group would you like this role to be removed from? (\`${types.join(', ')}\`)\n`,
 					type: 'string'
 				}
 			]
@@ -38,10 +38,10 @@ module.exports = class AddJoinFlairCommand extends Command {
 		const flairs = settings.joinflairs;
 		if (!flairs[args.type]) flairs[args.type] = {};
 		if (!flairs[args.type].roles) flairs[args.type].roles = [];
-		if (flairs[args.type].roles.includes(args.role.id)) return msg.reply('This role is already on the list of roles!');
-		flairs[args.type].roles.push(args.role.id);
+		if (!flairs[args.type].roles.includes(args.role.id)) return msg.reply('This role is not on the list of roles!');
+		flairs[args.type].roles.slice(args.role.id, 1);
 		settings.flairs = flairs;
 		await settings.save();
-		return msg.reply(`I have added ${args.role.name} to the list of roles automatically assigned on join to ${args.type}.`);
+		return msg.reply(`I have removed ${args.role.name} from the list of roles automatically assigned on join for ${args.type}.`);
 	}
 };

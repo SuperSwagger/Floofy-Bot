@@ -34,7 +34,7 @@ exports.run = async (bot, member) => {
 	}
 	// join flairs
 	if (joinflairs && joinflairs.enabled && joinflairs[`${member.user.bot ? 'bots' : 'users'}`]) {
-		member.addRoles(joinflairs[`${member.user.bot ? 'bots' : 'users'}`]);
+		member.addRoles(joinflairs[`${member.user.bot ? 'bots' : 'users'}`].roles);
 	}
 
 	// ROLESTATE

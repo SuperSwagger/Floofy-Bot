@@ -145,7 +145,7 @@ exports.run = async (bot, message) => { // eslint-disable-line
 	*/
 
 	if (cmd === 'nicememe') {
-		message.channel.sendFile('http://i.imgur.com/vSFbKbF.gelse if');
+		message.channel.sendFile('http://i.imgur.com/vSFbKbF.gif');
 	}
 	else if (cmd === 'eyes') {
 		message.channel.sendFile('https://cdn.discordapp.com/attachments/146477690885636096/176038770292817921/eyes.gif');
@@ -180,7 +180,7 @@ exports.run = async (bot, message) => { // eslint-disable-line
 		message.channel.sendFile(`${items[Math.floor(Math.random() * items.length)]}`);
 	}
 	else if (cmd === 'shitpost') {
-		message.channel.send('https://giant.gfycat.com/ImpoliteSinfulBuzzard.gelse if');
+		message.channel.send('https://giant.gfycat.com/ImpoliteSinfulBuzzard.gif');
 	}
 	else if (cmd.startsWith('anger')) {
 		let items = ['http://i3.kym-cdn.com/photos/images/facebook/001/015/665/006.png', 'http://i.imgur.com/S56PYLr.jpg'];
@@ -196,7 +196,7 @@ exports.run = async (bot, message) => { // eslint-disable-line
 		message.channel.sendFile('http://img2.wikia.nocookie.net/__cb20140818100403/madnesscombat/images/7/73/Headdesk.gif');
 	}
 	else if (cmd.startsWith('flip')) {
-		message.channel.sendFile('http://i.imgur.com/72ziBNk.gelse if');
+		message.channel.sendFile('http://i.imgur.com/72ziBNk.gif');
 	}
 	else if (cmd.startsWith('triggered')) {
 		message.channel.sendFile('http://i.imgur.com/7WtEXRe.png');
@@ -251,7 +251,7 @@ exports.run = async (bot, message) => { // eslint-disable-line
 		message.channel.send(`${items[Math.floor(Math.random() * items.length)]}`);
 	}
 	else if (cmd === 'yee') {
-		message.channel.sendFile('http://i.imgur.com/RNOVPGx.gelse if');
+		message.channel.sendFile('http://i.imgur.com/RNOVPGx.gif');
 	}
 	else if (cmd === 'cs') {
 		message.channel.sendFile('https://cdn.discordapp.com/attachments/144552169398337536/200542362617905154/IMG_3479.JPG');
